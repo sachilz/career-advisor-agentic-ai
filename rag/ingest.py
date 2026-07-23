@@ -9,8 +9,15 @@ Usage:
     python rag/ingest.py
 """
 
+import sys
 import os
 import glob
+
+# Ensure project root is in sys.path before package imports
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 from typing import List
 from langchain_core.documents import Document
 from langchain_community.document_loaders import TextLoader, PyPDFLoader
@@ -19,8 +26,6 @@ from langchain_community.document_loaders import TextLoader, PyPDFLoader
 from rag.chunking import chunk_documents
 from rag.embed_store import store_chunks, DEFAULT_PERSIST_DIR
 
-# Root data directory relative to project root
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 
 

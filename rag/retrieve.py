@@ -8,7 +8,14 @@ Function:
     query_knowledge_base(query: str, k: int = 5) -> List[Dict[str, Any]]
 """
 
+import sys
 import os
+
+# Ensure project root is in sys.path before package imports
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 from typing import List, Dict, Any
 from rag.embed_store import get_chroma_vector_store, DEFAULT_PERSIST_DIR, COLLECTION_NAME
 
