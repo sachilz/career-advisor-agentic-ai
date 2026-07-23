@@ -179,7 +179,7 @@ if "career_advice_result" in st.session_state:
         st.markdown("### 🚨 Identified Missing Skills")
         missing_skills = result.get("missing_skills", [])
         if missing_skills:
-            gaps_html = "".join([f'<span class="missing-badge">⚠ {s}</span>' for s in missing_list]) if 'missing_list' in locals() else "".join([f'<span class="missing-badge">⚠ {s}</span>' for s in missing_skills])
+            gaps_html = "".join([f'<span class="missing-badge">⚠ {s}</span>' for s in missing_skills])
             st.markdown(gaps_html, unsafe_allow_html=True)
         else:
             st.success("No major skill gaps identified!")
