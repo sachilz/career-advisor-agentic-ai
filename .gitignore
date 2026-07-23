@@ -1,0 +1,21 @@
+# Python & Virtualenv
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+ENV/
+
+# Environment variables & secrets
+.env
+.env.local
+
+# Temp / scratch & logs
+scratch/
+*.log
+pip_list.txt
+output.txt
+test_out.txt
+
+# Vector DB index binaries
+rag/chroma_db/
