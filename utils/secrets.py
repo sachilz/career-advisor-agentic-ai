@@ -18,6 +18,7 @@ execution both locally and in cloud production environments without code changes
 
 import os
 from typing import Optional
+# pyrefly: ignore [missing-import]
 from dotenv import load_dotenv
 
 # Load local .env file if present
@@ -38,6 +39,7 @@ def get_secret(key: str, default: Optional[str] = "") -> str:
     """
     # 1. Try Streamlit Cloud secrets (st.secrets)
     try:
+        # type: ignore # pyrefly: ignore [missing-import]
         import streamlit as st
         if hasattr(st, "secrets") and key in st.secrets:
             val = st.secrets[key]
