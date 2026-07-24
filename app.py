@@ -774,7 +774,8 @@ st.markdown("""
        ------------------------------------------------------------------------- */
     .career-timeline-wrapper {
         position: relative;
-        max-width: 1080px;
+        max-width: 1350px;
+        width: 100%;
         margin: 2.5rem auto;
         padding: 1rem 0;
     }
@@ -797,7 +798,7 @@ st.markdown("""
     .career-timeline-row {
         position: relative;
         width: 50%;
-        padding: 0.5rem 2.2rem;
+        padding: 0.5rem 1.4rem;
         box-sizing: border-box;
         z-index: 2;
         margin-bottom: 2.2rem;
