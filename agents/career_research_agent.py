@@ -51,9 +51,9 @@ def career_research_agent(state: CareerAdvisorState) -> CareerAdvisorState:
         print(f"  [+] Retrieved {len(retrieved_results)} relevant document chunk(s) from RAG vector store.")
     else:
         print("  [!] RAG vector store returned no chunks (or is unpopulated). Using domain context template.")
-        # Provide domain template context if vector store hasn't been ingested yet
+        # Provide domain-aware template context based on user's actual goal
         context_snippets = [
-            f"[Domain Knowledge]: Core requirements for a {goal} include Linux system administration, CI/CD pipeline automation (GitHub Actions, Jenkins), Containerization (Docker, Kubernetes), Cloud infrastructure (AWS/Azure), and Infrastructure-as-Code (Terraform, Ansible)."
+            f"[Domain Knowledge]: Core requirements for a {goal} in Sri Lanka's IT market. The student should research industry-specific skills, tools, frameworks, certifications, and practical project experience relevant to {goal} roles. Focus on what top Sri Lankan tech companies (Sysco LABS, Virtusa, WSO2, IFS, hSenid) look for when hiring for {goal} positions."
         ]
 
     return {

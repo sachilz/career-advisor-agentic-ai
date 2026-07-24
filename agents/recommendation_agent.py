@@ -32,7 +32,7 @@ def recommendation_agent(state: CareerAdvisorState) -> CareerAdvisorState:
     Returns:
         CareerAdvisorState: Updated state dictionary with 'final_recommendation'.
     """
-    goal = state.get("goal", "DevOps Engineer")
+    goal = state.get("goal", "Software Engineer")
     skills = state.get("skills", [])
     missing_skills = state.get("missing_skills", [])
     retrieved_context = state.get("retrieved_context", [])
@@ -85,9 +85,23 @@ def recommendation_agent(state: CareerAdvisorState) -> CareerAdvisorState:
 
 
 def _fallback_recommendation_report(goal: str, skills: list, missing_skills: list) -> str:
-    """Fallback markdown report generator when LLM client is offline."""
+    """Fallback markdown report generator when LLM client is offline. Dynamically adapts to the user's goal."""
     skills_str = ", ".join(skills) if skills else "General IT Fundamentals"
-    missing_str = ", ".join(missing_skills) if missing_skills else "Cloud Architecture & Containerization"
+    missing_str = ", ".join(missing_skills) if missing_skills else "Core domain-specific skills"
+    
+    # Build a dynamic 3-month roadmap based on missing skills
+    roadmap_months = []
+    for i, skill in enumerate(missing_skills[:6], 1):
+        roadmap_months.append(f"{i}. **Month {i} ({skill}):** Focus on hands-on learning, tutorials, and building mini-projects to develop proficiency in {skill}.")
+    
+    if not roadmap_months:
+        roadmap_months = [
+            f"1. **Month 1 (Foundation):** Build core fundamentals for {goal} through structured online courses.",
+            f"2. **Month 2 (Intermediate Skills):** Work on intermediate projects and deepen domain expertise for {goal}.",
+            f"3. **Month 3 (Portfolio & Job Prep):** Build a portfolio, prepare for interviews, and apply for {goal} roles."
+        ]
+    
+    roadmap_text = "\n".join(roadmap_months)
 
     return f"""## Target Career Profile & Feasibility
 - **Recommended Role:** {goal}
@@ -98,15 +112,16 @@ def _fallback_recommendation_report(goal: str, skills: list, missing_skills: lis
 - **Critical Missing Skills:** {missing_str}
 
 ## Recommended Certifications
-1. **AWS Certified Solutions Architect – Associate** (Highly valued in Sri Lankan tech companies like Sysco LABS, Virtusa, WSO2)
-2. **Docker Certified Associate (DCA)** or **CKAD (Kubernetes Developer)**
+1. **Industry-recognized certifications** relevant to {goal} (research top certifications valued by Sri Lankan tech employers for this role)
+2. **Practical project-based certifications** that demonstrate hands-on competency
 
 ## Step-by-Step Short Learning Roadmap (3-6 Months)
-1. **Month 1 (Fundamentals & Linux):** Master Linux command line, Bash scripting, and Git workflows.
-2. **Month 2 (Containerization):** Learn Docker, build custom container images, and set up Docker Compose.
-3. **Month 3 (CI/CD & Cloud):** Build automated CI/CD pipelines with GitHub Actions and deploy sample apps to AWS.
+{roadmap_text}
 
 ## Strategic Advice for the Sri Lankan IT Market
-- Focus on practical hands-on GitHub projects over passive video tutorials.
-- Connect with local DevOps communities (e.g. SLASSCOM, AWS User Group Sri Lanka).
+1. **Focus on Practical Projects:** Build hands-on GitHub projects demonstrating competency in {goal} over passive video tutorials.
+2. **Engage with Local IT Communities:** Connect with Sri Lankan tech meetups, Developer Circles, and local IT communities relevant to {goal}.
+3. **Target Top Sri Lankan IT Employers:** Apply to tech leaders in Colombo like Sysco LABS, Virtusa, WSO2, IFS, and hSenid that actively hire for {goal} roles.
+4. **Develop Soft Skills & Teamwork:** Develop communication skills, agile workflow habits, and collaboration skills valued in tech environments.
 """
+

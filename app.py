@@ -26,12 +26,45 @@ logger = logging.getLogger("CareerAdvisorUI")
 # ------------------------------------------------------------------------------
 # Helper Functions for Parsing & Formatting Professional Text
 # ------------------------------------------------------------------------------
+def sanitize_markdown_text(text: str) -> str:
+    """Sanitize raw markdown formatting into clean, professional HTML bold tags."""
+    if not text:
+        return ""
+    
+    s = text.strip()
+    
+    # Clean up broken/mismatched asterisks around label keys (e.g., *Target Position** -> **Target Position**)
+    s = re.sub(r'^\*+([^*]+?)\*+:\s*', r'**\1**: ', s)
+    s = re.sub(r'\*+([^*]+?)\*+:\s*', r'**\1**: ', s)
+
+    # Convert **bold** to <b>bold</b>
+    s = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', s)
+
+    # Convert single *italic* or leftover *text* to <b>text</b>
+    s = re.sub(r'\*(.*?)\*', r'<b>\1</b>', s)
+
+    # Clean up remaining quotes inside b tags or double quotes
+    s = s.replace('<b>"', '<b>').replace('"</b>', '</b>').replace('""', '"')
+    
+    # Clean up any leftover lone asterisks
+    s = re.sub(r'\*+:\s*', ': ', s)
+    s = s.replace('*', '')
+
+    return s
+
+
 def clean_text_formatting(text: str) -> str:
-    """Sanitize raw markdown formatting into clean HTML with consistent, prominent subheaders."""
+    """Sanitize raw markdown formatting into clean HTML with consistent, prominent subheaders and aligned list items."""
     if not text:
         return ""
     
     cleaned = text.strip()
+    
+    # Insert newlines before inline numbered list items (e.g., " 2. ", " 3. ")
+    cleaned = re.sub(r'(\s+)(\d+\.\s+)', r'\n\2', cleaned)
+    # Insert newlines before inline bullet points (e.g., " - ", " * ")
+    cleaned = re.sub(r'(\s+)([-\*•]\s+)', r'\n\2', cleaned)
+
     lines = cleaned.split("\n")
     formatted_lines = []
     first_header_skipped = False
@@ -39,7 +72,6 @@ def clean_text_formatting(text: str) -> str:
     for line in lines:
         stripped = line.strip()
         if not stripped:
-            formatted_lines.append("<br>")
             continue
             
         # Check if line is a top-level section header (e.g. ## Step-by-Step... or # Target Career...)
@@ -48,7 +80,7 @@ def clean_text_formatting(text: str) -> str:
             continue
             
         clean_header = re.sub(r'^\s*#{1,6}\s*', '', stripped)
-        clean_header_text = clean_header.replace('**', '').strip()
+        clean_header_text = clean_header.replace('**', '').replace('*', '').strip()
         lower_header = clean_header_text.lower()
         
         # Identify month/phase/step subheaders or ### markdown headers
@@ -66,19 +98,42 @@ def clean_text_formatting(text: str) -> str:
                 f'<h4 style="color: #818cf8; font-size: 1.2rem; font-weight: 700; margin-top: 1.25rem; margin-bottom: 0.55rem; display: flex; align-items: center; gap: 0.4rem; font-family: inherit;">'
                 f'📍 {clean_header_text}</h4>'
             )
-        else:
-            # Convert **bold** to <b>bold</b>
-            formatted = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', stripped)
-            formatted = formatted.replace('<b>"', '<b>').replace('"</b>', '</b>').replace('""', '"')
-            formatted_lines.append(formatted)
+            continue
+
+        # Check for numbered list items (e.g. "1. Stay Updated...")
+        numbered_match = re.match(r'^(\d+\.)\s*(.*)', stripped)
+        if numbered_match:
+            num_prefix = numbered_match.group(1)
+            item_body = sanitize_markdown_text(numbered_match.group(2))
+            formatted_lines.append(
+                f'<div style="margin-top: 0.55rem; margin-bottom: 0.55rem; line-height: 1.6; display: flex; align-items: flex-start; gap: 0.6rem;">'
+                f'<span style="color: #34d399; font-weight: 700; min-width: 1.6rem; font-size: 1rem;">{num_prefix}</span>'
+                f'<div style="color: #cbd5e1; flex: 1;">{item_body}</div>'
+                f'</div>'
+            )
+            continue
+
+        # Check for bullet list items (e.g. "- Focus on...", "* Build...")
+        bullet_match = re.match(r'^[-\*•]\s*(.*)', stripped)
+        if bullet_match:
+            item_body = sanitize_markdown_text(bullet_match.group(1))
+            formatted_lines.append(
+                f'<div style="margin-top: 0.45rem; margin-bottom: 0.45rem; line-height: 1.6; display: flex; align-items: flex-start; gap: 0.6rem;">'
+                f'<span style="color: #818cf8; font-weight: 700;">•</span>'
+                f'<div style="color: #cbd5e1; flex: 1;">{item_body}</div>'
+                f'</div>'
+            )
+            continue
+
+        # Normal text paragraph
+        formatted = sanitize_markdown_text(stripped)
+        formatted_lines.append(
+            f'<div style="margin-top: 0.45rem; margin-bottom: 0.45rem; line-height: 1.6; color: #cbd5e1;">{formatted}</div>'
+        )
             
-    result_html = "\n".join(formatted_lines)
-    
-    # Strip leading <br> tags if any
-    while result_html.startswith('<br>') or result_html.startswith('<br/>'):
-        result_html = re.sub(r'^(<br\s*/?>)+', '', result_html).strip()
-        
-    return result_html
+    return "\n".join(formatted_lines)
+
+
 
 
 def clean_bullet_item(item: str) -> str:
@@ -1415,6 +1470,7 @@ if submit_btn:
                 # Invoke LangGraph Multi-Agent Workflow
                 final_state: CareerAdvisorState = cast(CareerAdvisorState, run_career_advisor(current_input))
                 st.session_state["career_advice_result"] = final_state
+                st.session_state["last_executed_input"] = current_input
                 # Reset completed tracker sets on new query execution
                 st.session_state["completed_roadmap_steps"] = set()
                 st.session_state["learned_skills"] = set()
@@ -1431,9 +1487,17 @@ if submit_btn:
 # ------------------------------------------------------------------------------
 if "career_advice_result" in st.session_state:
     result: CareerAdvisorState = st.session_state["career_advice_result"]
-    
+    last_executed = st.session_state.get("last_executed_input", "")
+    current_input_text = user_input.strip() if 'user_input' in locals() and user_input else ""
+
     st.markdown("<br>", unsafe_allow_html=True)
+    
+    if current_input_text and last_executed and current_input_text != last_executed:
+        st.warning("⚠️ **New Input Text Detected!** The report below is from your previous run. Click the blue **`Generate Career Advice & Roadmap`** button above to generate the new report for your SQL profile!")
+
     st.markdown("## Your Personalized Career Intelligence Report")
+
+
 
     extracted_skills = result.get("skills") or []
     missing_skills = result.get("missing_skills") or []
@@ -1448,7 +1512,7 @@ if "career_advice_result" in st.session_state:
         st.markdown(f"""
         <div class="metric-card-glass">
             <div class="metric-lbl-text">Target IT Role</div>
-            <div class="metric-val-num" style="color: #818cf8; font-size: 1.05rem;">🎯 {target_role}</div>
+            <div class="metric-val-num" style="color: #818cf8; font-size: 1.05rem;">{target_role}</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -1456,7 +1520,7 @@ if "career_advice_result" in st.session_state:
         st.markdown(f"""
         <div class="metric-card-glass">
             <div class="metric-lbl-text">Current Strengths</div>
-            <div class="metric-val-num" style="color: #34d399; font-size: 1.7rem;">💪 {len(extracted_skills)}</div>
+            <div class="metric-val-num" style="color: #34d399; font-size: 1.7rem;">{len(extracted_skills)}</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -1464,7 +1528,7 @@ if "career_advice_result" in st.session_state:
         st.markdown(f"""
         <div class="metric-card-glass">
             <div class="metric-lbl-text">Missing Skills</div>
-            <div class="metric-val-num" style="color: #fb7185; font-size: 1.7rem;">🚨 {len(missing_skills)}</div>
+            <div class="metric-val-num" style="color: #fb7185; font-size: 1.7rem;">{len(missing_skills)}</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -1474,7 +1538,7 @@ if "career_advice_result" in st.session_state:
         st.markdown(f"""
         <div class="metric-card-glass">
             <div class="metric-lbl-text">Role Alignment</div>
-            <div class="metric-val-num" style="color: {color}; font-size: 1.15rem;">⚡ {match_score}</div>
+            <div class="metric-val-num" style="color: {color}; font-size: 1.15rem;">{match_score}</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -1491,7 +1555,7 @@ if "career_advice_result" in st.session_state:
     # TAB 1: INTERACTIVE CAREER ROADMAP & ELEVATION LADDER
     # --------------------------------------------------------------------------
     with tab_roadmap:
-        st.markdown("### 🪜 Interactive Career Elevation Ladder")
+        st.markdown("### Career Elevation Ladder")
         
         parsed_sec = parse_roadmap_sections(recommendation)
 
@@ -1512,7 +1576,7 @@ if "career_advice_result" in st.session_state:
                 st.markdown(f"""
                 <div class="report-card-box" style="background: linear-gradient(135deg, rgba(30, 27, 75, 0.85) 0%, rgba(15, 23, 42, 0.9) 100%); border-color: rgba(99, 102, 241, 0.35);">
                     <div class="report-section-title">
-                        <span>🎯 Target Career Profile & Feasibility Assessment</span>
+                        <span>Target Career Profile & Feasibility Assessment</span>
                     </div>
                     <div>{clean_profile}</div>
                 </div>
@@ -1522,14 +1586,28 @@ if "career_advice_result" in st.session_state:
             if not steps:
                 steps = extract_timeline_steps(recommendation)
             if not steps:
-                steps = [
-                    {"title": "Month 1: Linux Administration & Systems Fundamentals", "details": ["• Master Linux CLI, user permissions, systemd services, bash scripting, and core networking tools (netstat, curl, ssh)."]},
-                    {"title": "Month 2: Containerization with Docker", "details": ["• Learn Dockerfile optimization, multi-stage builds, container networking, volumes, and Docker Compose for multi-container apps."]},
-                    {"title": "Month 3: Continuous Integration & CI/CD Pipelines", "details": ["• Build automated build, test, scan, and release workflows using GitHub Actions and Jenkins."]},
-                    {"title": "Month 4: Container Orchestration with Kubernetes", "details": ["• Understand Pods, Deployments, Services, Ingress controllers, Helm charts, and cluster management on Minikube or EKS."]},
-                    {"title": "Month 5: Infrastructure as Code (Terraform) & Cloud Fundamentals", "details": ["• Provision cloud infrastructure using Terraform HCL scripts, manage AWS EC2, S3, VPCs, and IAM policies."]},
-                    {"title": "Month 6: Sri Lanka IT Market Execution, Certifications & Interview Prep", "details": ["• Complete LPIC-1/AWS cert prep, build GitHub portfolio, and apply for junior DevOps/SDET roles at Sysco LABS, Virtusa, and WSO2."]}
-                ]
+                # Build dynamic fallback steps from the user's actual missing skills and goal
+                dynamic_steps = []
+                if missing_skills:
+                    for i, skill in enumerate(missing_skills[:5], 1):
+                        dynamic_steps.append({
+                            "title": f"Month {i}: {skill}",
+                            "details": [f"• Focus on hands-on learning, tutorials, and building mini-projects to develop proficiency in {skill} for {target_role} roles."]
+                        })
+                    dynamic_steps.append({
+                        "title": f"Month {len(dynamic_steps) + 1}: Portfolio Building, Certifications & Interview Prep",
+                        "details": [f"• Complete relevant certification prep, build a strong GitHub portfolio showcasing {target_role} projects, and apply for junior {target_role} roles in Sri Lanka."]
+                    })
+                else:
+                    dynamic_steps = [
+                        {"title": f"Month 1: Core Fundamentals for {target_role}", "details": [f"• Build foundational skills and domain knowledge required for {target_role} roles."]},
+                        {"title": f"Month 2: Intermediate Skills & Tools", "details": [f"• Learn key tools, frameworks, and technologies commonly used by {target_role} professionals."]},
+                        {"title": f"Month 3: Hands-on Projects & Practice", "details": [f"• Build real-world projects to strengthen your {target_role} portfolio."]},
+                        {"title": f"Month 4: Advanced Concepts & Specialization", "details": [f"• Deep-dive into advanced topics and specializations within {target_role}."]},
+                        {"title": f"Month 5: Certifications & Industry Preparation", "details": [f"• Pursue industry certifications valued for {target_role} roles in Sri Lanka."]},
+                        {"title": f"Month 6: Job Search, Networking & Interview Prep", "details": [f"• Build your professional network, prepare for technical interviews, and apply for {target_role} positions."]},
+                    ]
+                steps = dynamic_steps
 
             if "completed_roadmap_steps" not in st.session_state:
                 st.session_state["completed_roadmap_steps"] = set()
@@ -1557,7 +1635,7 @@ if "career_advice_result" in st.session_state:
                 st.markdown(f"""
                 <div class="ladder-banner-glass">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
-                        <span style="font-size: 1.35rem; font-weight: 800; color: #ffffff;">🪜 Ladder Climb Elevation</span>
+                        <span style="font-size: 1.35rem; font-weight: 800; color: #ffffff;">Ladder Climb Elevation</span>
                         <span style="font-size: 1.05rem; font-weight: 700; color: {tier_color}; background: rgba(0,0,0,0.4); padding: 0.4rem 1.1rem; border-radius: 20px; border: 1px solid {tier_color};">{tier_name}</span>
                     </div>
                     <div style="color: #cbd5e1; font-size: 0.98rem; margin-bottom: 0.6rem;">
@@ -1569,7 +1647,7 @@ if "career_advice_result" in st.session_state:
                 st.progress(progress_pct / 100.0)
                 st.markdown("<br>", unsafe_allow_html=True)
 
-                st.subheader("🪜 Monthly Career Ladder Timeline")
+                st.subheader("Monthly Career Ladder Timeline")
                 st.caption("Check off each month phase as you master skills to climb your career ladder!")
 
                 # Quick Interactive Checkbox Toolbar for Monthly Rung Completion
@@ -1706,7 +1784,7 @@ if "career_advice_result" in st.session_state:
                 st.markdown(f"""
                 <div class="sl-strategic-box">
                     <div style="font-size: 1.2rem; font-weight: 700; color: #34d399; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid rgba(16, 185, 129, 0.25); padding-bottom: 0.6rem;">
-                        <span>🇱🇰 Strategic Advice for Sri Lankan IT Market</span>
+                        <span>Strategic Advice for Sri Lankan IT Market</span>
                     </div>
                     <div>{cleaned_advice}</div>
                 </div>
@@ -1727,8 +1805,12 @@ if "career_advice_result" in st.session_state:
 
             with col_tr1:
                 st.markdown("#### ✅ Current Strengths (Already Possessed)")
-                for s in extracted_skills:
-                    st.markdown(f"<span class='skill-badge-emerald'>✓ {s}</span>", unsafe_allow_html=True)
+                if extracted_skills:
+                    badges_html = "".join([f"<span class='skill-badge-emerald'>✓ {s}</span>" for s in extracted_skills])
+                    st.markdown(f"<div style='display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 0.75rem; margin-bottom: 1rem;'>{badges_html}</div>", unsafe_allow_html=True)
+                else:
+                    st.caption("No current skills specified.")
+
 
             with col_tr2:
                 st.markdown("#### 🚨 Missing Skills to Acquire")
@@ -1944,4 +2026,3 @@ st.markdown("""
     <a href="https://github.com/your-username/career-advisor-agentic-ai" target="_blank">🔗 View Project Repository on GitHub</a>
 </div>
 """, unsafe_allow_html=True)
-

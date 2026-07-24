@@ -71,9 +71,10 @@ def skills_gap_agent(state: CareerAdvisorState) -> CareerAdvisorState:
             content = " ".join(str(c) for c in content if isinstance(c, str))
         content = content.strip()
 
-        if content.startswith("```"):
-            content = re.sub(r"^```(?:json)?\n?", "", content)
-            content = re.sub(r"\n?```$", "", content).strip()
+        # Robust JSON array extraction
+        json_match = re.search(r"\[.*\]", content, re.DOTALL)
+        if json_match:
+            content = json_match.group(0)
 
         missing_skills = json.loads(content)
         if not isinstance(missing_skills, list):
@@ -92,10 +93,46 @@ def skills_gap_agent(state: CareerAdvisorState) -> CareerAdvisorState:
 
 
 def _fallback_gap_analysis(skills: List[str], goal: str) -> List[str]:
-    """Fallback skill gap calculator."""
+    """Fallback skill gap calculator with role-aware requirements."""
     skills_lower = [s.lower() for s in skills]
+    goal_lower = goal.lower()
     
-    devops_reqs = ["Linux Administration", "Docker & Containerization", "Kubernetes Orchestration", "CI/CD Pipelines (GitHub Actions/Jenkins)", "Terraform IaC", "AWS/Azure Cloud Fundamentals"]
+    # Role-specific requirement maps
+    role_requirements = {
+        "devops": ["Linux Administration", "Docker & Containerization", "Kubernetes Orchestration", "CI/CD Pipelines (GitHub Actions/Jenkins)", "Terraform IaC", "AWS/Azure Cloud Fundamentals"],
+        "data analyst": ["SQL & Complex Queries", "Data Visualization (Power BI / Tableau)", "Python/R for Analytics (Pandas/NumPy)", "Excel & Spreadsheet Modeling", "Statistics & Business Intelligence", "Data Warehousing & ETL Basics"],
+        "data analytics": ["SQL & Complex Queries", "Data Visualization (Power BI / Tableau)", "Python/R for Analytics (Pandas/NumPy)", "Excel & Spreadsheet Modeling", "Statistics & Business Intelligence", "Data Warehousing & ETL Basics"],
+        "data scien": ["Python (NumPy/Pandas)", "Machine Learning (Scikit-learn)", "Deep Learning (TensorFlow/PyTorch)", "SQL & Database Querying", "Data Visualization (Matplotlib/Seaborn)", "Statistics & Probability"],
+        "data engineer": ["SQL & Database Design", "Python/Scala for Data Pipelines", "Apache Spark/Kafka", "ETL & Data Warehousing", "Cloud Data Services (AWS Redshift/GCP BigQuery)", "Airflow/dbt"],
+        "database": ["SQL (Advanced Queries, Joins, Indexing)", "Database Design & Normalization", "PostgreSQL / MySQL Administration", "Performance Tuning & Query Optimization", "NoSQL Databases (MongoDB/Redis)", "Database Backup, Security & Disaster Recovery"],
+        "sql": ["SQL (Advanced Queries, Joins, Indexing)", "Database Design & Normalization", "PostgreSQL / MySQL Administration", "Performance Tuning & Query Optimization", "NoSQL Databases (MongoDB/Redis)", "Data Warehousing Basics"],
+        "backend": ["Python/Java/Node.js", "REST API Design", "SQL & Database Management", "Authentication & Security", "Docker & Deployment", "System Design Fundamentals"],
+        "frontend": ["HTML/CSS/JavaScript", "React or Angular or Vue.js", "TypeScript", "Responsive Design & CSS Frameworks", "State Management (Redux/Zustand)", "Testing (Jest/Cypress)"],
+        "full-stack": ["Frontend (React/Angular)", "Backend (Node.js/Python)", "REST API & GraphQL", "SQL & NoSQL Databases", "Docker & CI/CD", "Cloud Deployment (AWS/Vercel)"],
+        "full stack": ["Frontend (React/Angular)", "Backend (Node.js/Python)", "REST API & GraphQL", "SQL & NoSQL Databases", "Docker & CI/CD", "Cloud Deployment (AWS/Vercel)"],
+        "cloud": ["AWS/Azure/GCP Core Services", "Infrastructure as Code (Terraform)", "Networking & Security", "Containerization (Docker/K8s)", "Monitoring & Logging", "Cost Optimization"],
+        "mobile": ["React Native or Flutter", "iOS/Android Native Development", "Mobile UI/UX Design", "REST API Integration", "App Store Deployment", "Push Notifications & Analytics"],
+        "machine learning": ["Python (NumPy/Pandas/Scikit-learn)", "Deep Learning Frameworks", "Model Training & Evaluation", "Feature Engineering", "MLOps & Model Deployment", "Mathematics (Linear Algebra/Statistics)"],
+        "ai": ["Python Programming", "Machine Learning Fundamentals", "Deep Learning (PyTorch/TensorFlow)", "NLP & Computer Vision", "LLM & Prompt Engineering", "MLOps & Model Deployment"],
+        "cyber": ["Network Security Fundamentals", "Penetration Testing", "Security Information & Event Management (SIEM)", "Ethical Hacking Tools (Burp Suite/Metasploit)", "Compliance & Governance", "Incident Response"],
+        "security": ["Network Security Fundamentals", "Penetration Testing", "Security Information & Event Management (SIEM)", "Ethical Hacking Tools (Burp Suite/Metasploit)", "Compliance & Governance", "Incident Response"],
+        "qa": ["Manual Testing Fundamentals", "Test Automation (Selenium/Cypress)", "API Testing (Postman/RestAssured)", "CI/CD Integration Testing", "Performance Testing (JMeter)", "Test Planning & Bug Tracking"],
+        "ui": ["Figma & Wireframing", "User Research & Usability Testing", "Design Systems & Prototyping", "Information Architecture", "HTML/CSS Basics"],
+        "ux": ["Figma & Wireframing", "User Research & Usability Testing", "Design Systems & Prototyping", "Information Architecture", "HTML/CSS Basics"],
+        "software engineer": ["Data Structures & Algorithms", "System Design", "Version Control (Git)", "Testing & Debugging", "API Design & Integration", "Cloud Deployment Basics"],
+    }
     
-    missing = [req for req in devops_reqs if not any(kw in req.lower() for kw in skills_lower)]
-    return missing if missing else ["Advanced System Design", "Production Monitoring & Observability"]
+    # Find matching role requirements
+    reqs = None
+    for role_key, role_reqs in role_requirements.items():
+        if role_key in goal_lower:
+            reqs = role_reqs
+            break
+    
+    # Default generic requirements if no role match
+    if reqs is None:
+        reqs = ["Data Structures & Algorithms", "System Design", "Version Control (Git)", "Testing & Debugging", "API Design & Integration", "Cloud Deployment Basics"]
+    
+    missing = [req for req in reqs if not any(kw in req.lower() for kw in skills_lower)]
+    return missing if missing else ["Advanced System Design", "Production Best Practices"]
+
