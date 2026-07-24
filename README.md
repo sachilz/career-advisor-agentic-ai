@@ -4,6 +4,8 @@
 
 By orchestrating specialized AI agents using **LangGraph**, harnessing a domain-specific **ChromaDB RAG Engine**, and dynamically routing prompts across high-speed and high-reasoning LLMs (**Groq** & **OpenRouter**), the platform converts raw student profile data into personalized career development roadmaps, interactive skill gap matrixes, industry credential recommendations, and local market strategic advice—all delivered through an interactive **Streamlit** web application.
 
+![Career Advisor AI Dashboard Homepage](assets/homepage.png)
+
 ---
 
 ## 🌟 Overview & Core Mission
