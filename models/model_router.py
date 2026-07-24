@@ -18,6 +18,7 @@ Environment Variables Required:
 """
 
 import os
+from typing import Any, Union
 from dotenv import load_dotenv
 from langchain_core.language_models import BaseChatModel
 
@@ -25,7 +26,7 @@ from langchain_core.language_models import BaseChatModel
 load_dotenv()
 
 
-def get_model_for_task(task_name: str) -> BaseChatModel:
+def get_model_for_task(task_name: str) -> Any:
     """
     Returns a configured LangChain Chat Model client tailored for the specified agent task.
     
@@ -33,7 +34,7 @@ def get_model_for_task(task_name: str) -> BaseChatModel:
         task_name (str): Name of agent task ('intent_analysis', 'career_research', 'skills_gap', 'final_recommendation').
         
     Returns:
-        BaseChatModel: Configured LangChain chat model instance.
+        BaseChatModel | Any: Configured LangChain chat model or fallback model instance.
     """
     groq_api_key = os.getenv("GROQ_API_KEY", "").strip()
     openrouter_api_key = os.getenv("OPENROUTER_API_KEY", "").strip()
@@ -100,26 +101,48 @@ class DynamicFallbackChatModel:
     def invoke(self, input_messages, config=None, **kwargs):
         import json
         import re
-        from langchain_core.messages import AIMessage, BaseMessage
+        from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
-        # Combine input messages to extract prompt text
+        # Extract only user / human text content to prevent system prompt pollution
+        user_text = ""
+        full_text = ""
         if isinstance(input_messages, list):
-            text_content = "\n".join(
-                m.content if isinstance(m, BaseMessage) else str(m) 
-                for m in input_messages
-            )
+            for m in input_messages:
+                if isinstance(m, BaseMessage):
+                    if isinstance(m.content, str):
+                        content_str = m.content
+                    elif isinstance(m.content, list):
+                        content_str = " ".join(str(c) for c in m.content)
+                    else:
+                        content_str = str(m.content)
+                else:
+                    content_str = str(m)
+
+                full_text += content_str + "\n"
+                is_human = False
+                if hasattr(m, "type") and getattr(m, "type", "") in ["human", "user"]:
+                    is_human = True
+                elif isinstance(m, HumanMessage):
+                    is_human = True
+
+                if is_human:
+                    user_text += content_str + "\n"
+
+            if not user_text.strip():
+                user_text = full_text
         else:
-            text_content = str(input_messages)
+            user_text = str(input_messages)
+            full_text = user_text
 
         if self.task_name == "intent_analysis":
             from agents.intent_analysis_agent import _heuristic_extraction
-            skills, goal = _heuristic_extraction(text_content)
+            skills, goal = _heuristic_extraction(user_text)
             content = json.dumps({"skills": skills, "goal": goal})
 
         elif self.task_name == "skills_gap":
             from agents.skills_gap_agent import _fallback_gap_analysis
-            goal_match = re.search(r"Target Role Goal:\s*(.+)", text_content)
-            skills_match = re.search(r"Student's Current Skills:\s*\[(.*?)\]", text_content)
+            goal_match = re.search(r"Target Role Goal:\s*(.+)", full_text)
+            skills_match = re.search(r"Student's Current Skills:\s*\[(.*?)\]", full_text)
 
             goal = goal_match.group(1).strip() if goal_match else "Software Engineer"
             skills_raw = skills_match.group(1) if skills_match else ""
@@ -130,9 +153,9 @@ class DynamicFallbackChatModel:
 
         else: # final_recommendation
             from agents.recommendation_agent import _fallback_recommendation_report
-            goal_match = re.search(r"Target Goal:\s*(.+)", text_content)
-            skills_match = re.search(r"Student's Current Known Skills:\s*\[(.*?)\]", text_content)
-            missing_match = re.search(r"Identified Missing Skills \(Gap\):\s*\[(.*?)\]", text_content)
+            goal_match = re.search(r"Target Goal:\s*(.+)", full_text)
+            skills_match = re.search(r"Student's Current Known Skills:\s*\[(.*?)\]", full_text)
+            missing_match = re.search(r"Identified Missing Skills \(Gap\):\s*\[(.*?)\]", full_text)
 
             goal = goal_match.group(1).strip() if goal_match else "Software Engineer"
             skills_raw = skills_match.group(1) if skills_match else ""
