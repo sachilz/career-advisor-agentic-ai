@@ -66,7 +66,10 @@ def skills_gap_agent(state: CareerAdvisorState) -> CareerAdvisorState:
 
     try:
         response = model.invoke(messages)
-        content = response.content.strip()
+        content = response.content
+        if isinstance(content, list):
+            content = " ".join(str(c) for c in content if isinstance(c, str))
+        content = content.strip()
 
         if content.startswith("```"):
             content = re.sub(r"^```(?:json)?\n?", "", content)
@@ -83,6 +86,7 @@ def skills_gap_agent(state: CareerAdvisorState) -> CareerAdvisorState:
     print(f"  [+] Identified Missing Skills: {missing_skills}")
 
     return {
+        **state,
         "missing_skills": missing_skills
     }
 

@@ -28,10 +28,10 @@ from models.model_router import get_model_for_task
 def intent_analysis_agent(state: CareerAdvisorState) -> CareerAdvisorState:
     """
     Worker Node 1: Analyzes raw user text to extract current technical skills and career goal.
-    
+
     Args:
         state (CareerAdvisorState): Current pipeline state.
-        
+
     Returns:
         CareerAdvisorState: Updated state dictionary with 'skills' and 'goal'.
     """
@@ -64,7 +64,11 @@ def intent_analysis_agent(state: CareerAdvisorState) -> CareerAdvisorState:
 
     try:
         response = model.invoke(messages)
-        content = response.content.strip()
+        content = response.content
+        # Handle case where content is a list (e.g. tool calls / content blocks)
+        if isinstance(content, list):
+            content = " ".join(str(c) for c in content if isinstance(c, str))
+        content = content.strip()
 
         # Clean potential markdown code blocks (```json ... ```)
         if content.startswith("```"):
@@ -83,6 +87,7 @@ def intent_analysis_agent(state: CareerAdvisorState) -> CareerAdvisorState:
     print(f"  [+] Extracted Goal:   {extracted_goal}")
 
     return {
+        **state,
         "skills": extracted_skills,
         "goal": extracted_goal
     }

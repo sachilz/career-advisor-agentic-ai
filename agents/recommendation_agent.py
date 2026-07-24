@@ -68,7 +68,10 @@ def recommendation_agent(state: CareerAdvisorState) -> CareerAdvisorState:
 
     try:
         response = model.invoke(messages)
-        final_text = response.content.strip()
+        content = response.content
+        if isinstance(content, list):
+            content = " ".join(str(c) for c in content if isinstance(c, str))
+        final_text = content.strip()
     except Exception as e:
         print(f"[Agent 4: Recommendation Agent] Warning generating LLM recommendation: {e}. Generating fallback report.")
         final_text = _fallback_recommendation_report(goal, skills, missing_skills)
@@ -76,6 +79,7 @@ def recommendation_agent(state: CareerAdvisorState) -> CareerAdvisorState:
     print(f"  [+] Final Recommendation Generated ({len(final_text)} characters).")
 
     return {
+        **state,
         "final_recommendation": final_text
     }
 

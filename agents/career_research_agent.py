@@ -57,5 +57,6 @@ def career_research_agent(state: CareerAdvisorState) -> CareerAdvisorState:
         ]
 
     return {
+        **state,
         "retrieved_context": context_snippets
     }
