@@ -1,6 +1,3 @@
-# Career Advisor AI - Streamlit Web Application (Ultra-Modern & Interactive Edition)
-# Course Assignment: IT41043 Agentic AI Assignment
-
 import sys
 import os
 import logging
@@ -426,6 +423,70 @@ def get_month_card_metadata(title_text: str, details_list: List[str], idx: int) 
     }
 
 
+def render_interactive_agent_progress(current_phase: int) -> str:
+    """Renders an ultra-modern glassmorphic multi-agent live execution progress UI."""
+    phases = [
+        {"num": 1, "name": "Intent & Goal Parsing Agent", "desc": "Analyzing profile, extracting technical skills & target career goal..."},
+        {"num": 2, "name": "RAG Vector Store Retrieval Agent", "desc": "Querying local ChromaDB knowledge base for 2026 Sri Lanka IT market standards..."},
+        {"num": 3, "name": "Skills Gap Evaluator Agent", "desc": "Cross-referencing current skills vs missing industry requirements..."},
+        {"num": 4, "name": "Strategic Roadmap & Advice Agent", "desc": "Synthesizing monthly elevation ladder, certifications & market advice..."}
+    ]
+    
+    pct = min(int((current_phase / 4.0) * 100), 100)
+    
+    cards_html = ""
+    for p in phases:
+        p_num = p["num"]
+        if current_phase > p_num:
+            card_class = "agent-step-card agent-step-card-completed"
+            tag_html = '<span class="agent-tag-completed">COMPLETED</span>'
+            title_color = "#34d399"
+        elif current_phase == p_num:
+            card_class = "agent-step-card agent-step-card-active"
+            tag_html = '<span class="agent-tag-active"><span class="agent-spinner"></span>EXECUTING...</span>'
+            title_color = "#818cf8"
+        else:
+            card_class = "agent-step-card"
+            tag_html = '<span class="agent-tag-waiting">QUEUED</span>'
+            title_color = "#94a3b8"
+            
+        cards_html += (
+            f'<div class="{card_class}">'
+            f'<div class="agent-step-info">'
+            f'<div>'
+            f'<div class="agent-step-title" style="color: {title_color};">{p["name"]}</div>'
+            f'<div class="agent-step-desc">{p["desc"]}</div>'
+            f'</div>'
+            f'</div>'
+            f'<div>{tag_html}</div>'
+            f'</div>'
+        )
+        
+    status_label = "ANALYSIS COMPLETE (100%)" if current_phase > 4 else f"ORCHESTRATION ACTIVE ({pct}%)"
+    badge_class = "agent-badge-completed" if current_phase > 4 else "agent-badge-live"
+    dot_html = '<span class="agent-pulse-dot"></span>' if current_phase <= 4 else '<span></span>'
+
+    return f"""
+    <div class="agent-workflow-container">
+        <div class="agent-header-row">
+            <div class="agent-title-text">
+                <span>Multi-Agent Workflow Engine Active</span>
+            </div>
+            <div class="{badge_class}">
+                {dot_html}
+                <span>{status_label}</span>
+            </div>
+        </div>
+        <div style="margin-bottom: 1.1rem;">
+            <div style="background: rgba(255, 255, 255, 0.08); border-radius: 10px; height: 8px; overflow: hidden; width: 100%;">
+                <div style="background: linear-gradient(90deg, #6366f1, #06b6d4, #10b981); height: 100%; width: {pct}%; transition: width 0.4s ease;"></div>
+            </div>
+        </div>
+        <div>{cards_html}</div>
+    </div>
+    """
+
+
 
 # ------------------------------------------------------------------------------
 # 1. Page Configuration & Modern Glassmorphic Custom CSS Design System
@@ -795,10 +856,11 @@ st.markdown("""
     }
 
     /* Timeline Row Container */
+    /* Timeline Row Container */
     .career-timeline-row {
         position: relative;
         width: 50%;
-        padding: 0.5rem 1.4rem;
+        padding: 0.5rem 2.2rem;
         box-sizing: border-box;
         z-index: 2;
         margin-bottom: 2.2rem;
@@ -850,24 +912,24 @@ st.markdown("""
         left: -22px;
     }
 
-    /* Horizontal Connector Cyan Line - Meets Card Outer Border Flush */
+    /* Horizontal Connector Cyan Line - Extends from Circle Node Edge to Card Border */
     .career-timeline-connector {
         position: absolute;
         top: calc(1.8rem + 21px);
         height: 2px;
         background: #00f2fe;
         box-shadow: 0 0 10px #00f2fe;
-        z-index: 3;
+        z-index: 5;
     }
 
     .career-timeline-row.row-left .career-timeline-connector {
         right: 22px;
-        width: 20px;
+        width: 14px;
     }
 
     .career-timeline-row.row-right .career-timeline-connector {
         left: 22px;
-        width: 20px;
+        width: 14px;
     }
 
     /* Card Styling - Positioned in Front of Connector Line */
@@ -988,7 +1050,7 @@ st.markdown("""
         .career-timeline-row {
             width: 100% !important;
             left: 0 !important;
-            padding-left: 48px !important;
+            padding-left: 55px !important;
             padding-right: 0px !important;
             margin-bottom: 1.5rem !important;
         }
@@ -1004,8 +1066,9 @@ st.markdown("""
         .career-timeline-row.row-right .career-timeline-connector {
             left: 35px !important;
             right: auto !important;
-            width: 13px !important;
-            z-index: 3 !important;
+            width: 20px !important;
+            height: 2px !important;
+            z-index: 5 !important;
         }
         .photo-month-card {
             padding: 1.15rem 1.1rem !important;
@@ -1046,6 +1109,183 @@ st.markdown("""
             font-size: 0.86rem !important;
             line-height: 1.35 !important;
         }
+    }
+
+    /* Multi-Agent Live Execution Dashboard */
+    .agent-workflow-container {
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.92) 100%);
+        border: 1px solid rgba(139, 92, 246, 0.45);
+        border-radius: 22px;
+        padding: 1.6rem 1.8rem;
+        margin: 1.5rem 0;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65), 0 0 30px rgba(99, 102, 241, 0.2);
+        backdrop-filter: blur(16px);
+    }
+
+    .agent-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: 1rem;
+    }
+
+    .agent-title-text {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    .agent-badge-live {
+        background: rgba(139, 92, 246, 0.18);
+        color: #c084fc;
+        border: 1px solid rgba(139, 92, 246, 0.45);
+        font-size: 0.78rem;
+        font-weight: 800;
+        padding: 0.35rem 0.9rem;
+        border-radius: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .agent-badge-completed {
+        background: rgba(16, 185, 129, 0.18);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.45);
+        font-size: 0.78rem;
+        font-weight: 800;
+        padding: 0.35rem 0.9rem;
+        border-radius: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .agent-pulse-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #34d399;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #34d399;
+        animation: agentPulse 1.4s infinite ease-in-out;
+    }
+
+    @keyframes agentPulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.35; transform: scale(0.85); }
+    }
+
+    /* Individual Agent Step Card */
+    .agent-step-card {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 14px;
+        padding: 0.95rem 1.2rem;
+        margin-bottom: 0.75rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .agent-step-card-active {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.22) 0%, rgba(139, 92, 246, 0.18) 100%);
+        border: 1px solid rgba(139, 92, 246, 0.65);
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.25);
+    }
+
+    .agent-step-card-completed {
+        background: rgba(6, 182, 212, 0.06);
+        border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .agent-step-info {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+    }
+
+    .agent-step-icon {
+        font-size: 1.45rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .agent-step-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        color: #ffffff;
+    }
+
+    .agent-step-desc {
+        font-size: 0.83rem;
+        color: #94a3b8;
+        margin-top: 0.15rem;
+        line-height: 1.4;
+    }
+
+    .agent-tag-waiting {
+        background: rgba(148, 163, 184, 0.1);
+        color: #94a3b8;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        white-space: nowrap;
+    }
+
+    .agent-tag-active {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: #ffffff;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 0.28rem 0.8rem;
+        border-radius: 12px;
+        box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .agent-spinner {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-radius: 50%;
+        border-top-color: #ffffff;
+        animation: agentSpin 0.75s linear infinite;
+        margin-right: 0.45rem;
+    }
+
+    @keyframes agentSpin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .agent-tag-completed {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.5);
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 0.28rem 0.8rem;
+        border-radius: 12px;
+        white-space: nowrap;
     }
 
     /* Sri Lanka Strategic Advice Box */
@@ -1606,31 +1846,43 @@ if submit_btn:
         if openrouter_key:
             os.environ["OPENROUTER_API_KEY"] = openrouter_key
 
-        # Interactive Multistage Step Progress Status Box
-        status_box = st.status("**Multi-Agent Workflow Engine Active...**", expanded=True)
-        with status_box:
-            st.write("**Phase 1 (Intent Agent):** Parsing skills & extracting target goal...")
-            time.sleep(0.3)
-            st.write("**Phase 2 (RAG Agent):** Querying Sri Lanka IT Knowledge Base...")
-            time.sleep(0.3)
-            st.write("**Phase 3 (Gap Agent):** Calculating skills gap & market requirements...")
-            time.sleep(0.3)
-            st.write("**Phase 4 (Recommendation Agent):** Synthesizing career roadmap...")
+        # Ultra-Modern Interactive Multi-Agent Progress Dashboard
+        progress_placeholder = st.empty()
+        
+        # Phase 1: Intent & Goal Parsing
+        progress_placeholder.markdown(render_interactive_agent_progress(1), unsafe_allow_html=True)
+        time.sleep(3.0)
+        
+        # Phase 2: RAG Knowledge Base Retrieval
+        progress_placeholder.markdown(render_interactive_agent_progress(2), unsafe_allow_html=True)
+        time.sleep(3.0)
+        
+        # Phase 3: Skills Gap Evaluator
+        progress_placeholder.markdown(render_interactive_agent_progress(3), unsafe_allow_html=True)
+        time.sleep(3.0)
+        
+        # Phase 4: Strategic Roadmap Synthesis
+        progress_placeholder.markdown(render_interactive_agent_progress(4), unsafe_allow_html=True)
+        
+        try:
+            # Invoke LangGraph Multi-Agent Workflow
+            final_state: CareerAdvisorState = cast(CareerAdvisorState, run_career_advisor(current_input))
+            st.session_state["career_advice_result"] = final_state
+            st.session_state["last_executed_input"] = current_input
+            # Reset completed tracker sets on new query execution
+            st.session_state["completed_roadmap_steps"] = set()
+            st.session_state["learned_skills"] = set()
             
-            try:
-                # Invoke LangGraph Multi-Agent Workflow
-                final_state: CareerAdvisorState = cast(CareerAdvisorState, run_career_advisor(current_input))
-                st.session_state["career_advice_result"] = final_state
-                st.session_state["last_executed_input"] = current_input
-                # Reset completed tracker sets on new query execution
-                st.session_state["completed_roadmap_steps"] = set()
-                st.session_state["learned_skills"] = set()
-                status_box.update(label=" **Multi-Agent Career Analysis Complete!**", state="complete", expanded=False)
-                
-            except Exception as e:
-                logger.error(f"Error executing run_career_advisor: {e}", exc_info=True)
-                status_box.update(label=" **Analysis Error**", state="error", expanded=True)
-                st.error(f"An error occurred while generating your advice: {e}")
+            # Phase 5: Render 100% Completed State
+            progress_placeholder.markdown(render_interactive_agent_progress(5), unsafe_allow_html=True)
+            time.sleep(0.5)
+            progress_placeholder.empty()
+            st.toast("Multi-Agent Career Analysis Completed Successfully!")
+            
+        except Exception as e:
+            logger.error(f"Error executing run_career_advisor: {e}", exc_info=True)
+            progress_placeholder.empty()
+            st.error(f"An error occurred while generating your advice: {e}")
 
 
 # ------------------------------------------------------------------------------
