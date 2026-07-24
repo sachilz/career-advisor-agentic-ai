@@ -1133,28 +1133,47 @@ st.markdown("""
         padding-bottom: 0.6rem;
     }
 
+    .report-skills-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-bottom: 0.8rem;
+    }
+
     .report-strength-item {
         background: rgba(16, 185, 129, 0.08);
         border: 1px solid rgba(16, 185, 129, 0.25);
-        border-left: 5px solid #10b981;
-        border-radius: 14px;
-        padding: 0.75rem 1rem;
-        margin-bottom: 0.6rem;
+        border-left: 4px solid #10b981;
+        border-radius: 12px;
+        padding: 0.5rem 0.85rem;
         color: #e2e8f0;
         font-size: 0.92rem;
-        line-height: 1.5;
+        line-height: 1.4;
+        display: inline-flex;
+        align-items: center;
+        transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .report-strength-item:hover {
+        transform: translateY(-2px);
+        background: rgba(16, 185, 129, 0.16);
     }
 
     .report-gap-item {
         background: rgba(244, 63, 94, 0.08);
         border: 1px solid rgba(244, 63, 94, 0.25);
-        border-left: 5px solid #f43f5e;
-        border-radius: 14px;
-        padding: 0.75rem 1rem;
-        margin-bottom: 0.6rem;
+        border-left: 4px solid #f43f5e;
+        border-radius: 12px;
+        padding: 0.5rem 0.85rem;
         color: #e2e8f0;
         font-size: 0.92rem;
-        line-height: 1.5;
+        line-height: 1.4;
+        display: inline-flex;
+        align-items: center;
+        transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .report-gap-item:hover {
+        transform: translateY(-2px);
+        background: rgba(244, 63, 94, 0.16);
     }
 
     /* Certification Cards Styling */
@@ -1909,16 +1928,16 @@ if "career_advice_result" in st.session_state:
                 with col_rep_str:
                     st.markdown('<h5 style="color: #34d399; margin-bottom: 0.8rem;">💪 Existing Technical Strengths</h5>', unsafe_allow_html=True)
                     if extracted_skills:
-                        for s in extracted_skills:
-                            st.markdown(f'<div class="report-strength-item"><b>✓ {s}</b></div>', unsafe_allow_html=True)
+                        str_items = "".join([f'<div class="report-strength-item"><b>✓ {s}</b></div>' for s in extracted_skills])
+                        st.markdown(f'<div class="report-skills-container">{str_items}</div>', unsafe_allow_html=True)
                     else:
                         st.info("No specific initial skills provided.")
 
                 with col_rep_gap:
                     st.markdown('<h5 style="color: #fb7185; margin-bottom: 0.8rem;">🚨 Priority Skill Gaps to Acquire</h5>', unsafe_allow_html=True)
                     if missing_skills:
-                        for s in missing_skills:
-                            st.markdown(f'<div class="report-gap-item"><b>⚡ {s}</b></div>', unsafe_allow_html=True)
+                        gap_items = "".join([f'<div class="report-gap-item"><b>⚡ {s}</b></div>' for s in missing_skills])
+                        st.markdown(f'<div class="report-skills-container">{gap_items}</div>', unsafe_allow_html=True)
                     else:
                         st.success("No major skill gaps identified!")
 
