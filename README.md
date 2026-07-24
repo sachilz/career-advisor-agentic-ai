@@ -1,6 +1,6 @@
 # Career Advisor Agentic AI
 
-An intelligent agentic AI web application for career pathing, skill gap analysis, and personalized career roadmaps built with **Streamlit**, **LangGraph**, and **ChromaDB RAG**.
+An intelligent agentic AI web application for Sri Lankan IT students that provides career pathing, skill gap analysis, and personalized career roadmaps built with **Streamlit**, **LangGraph**, and **ChromaDB RAG**.
 
 ---
 
@@ -62,3 +62,4 @@ docker run -d \
 - **CPU PyTorch Index:** Specifies `--index-url https://download.pytorch.org/whl/cpu` to avoid downloading CUDA/GPU dependencies (saves **~2.2 GB** of disk space).
 - **Multi-Stage Build:** Keeps build tools outside of the final image runtime.
 - **Security:** Executes container process as non-root `appuser`.
+
