@@ -827,7 +827,7 @@ st.markdown("""
         font-size: 1.25rem;
         color: #ffffff;
         box-shadow: 0 0 18px rgba(0, 242, 254, 0.9);
-        z-index: 4;
+        z-index: 6;
         transition: all 0.3s ease;
     }
 
@@ -850,27 +850,27 @@ st.markdown("""
         left: -22px;
     }
 
-    /* Horizontal Connector Cyan Line */
+    /* Horizontal Connector Cyan Line - Placed Behind Card */
     .career-timeline-connector {
         position: absolute;
         top: calc(1.8rem + 21px);
         height: 2px;
         background: #00f2fe;
         box-shadow: 0 0 10px #00f2fe;
-        z-index: 3;
+        z-index: 2;
     }
 
     .career-timeline-row.row-left .career-timeline-connector {
-        right: 22px;
-        width: 20px;
+        right: 0px;
+        width: 45px;
     }
 
     .career-timeline-row.row-right .career-timeline-connector {
-        left: 22px;
-        width: 20px;
+        left: 0px;
+        width: 45px;
     }
 
-    /* Card Styling Matching Photo */
+    /* Card Styling - Positioned in Front of Connector Line */
     .photo-month-card {
         background: #0d0e15;
         border: 1px solid rgba(255, 255, 255, 0.08);
@@ -880,6 +880,7 @@ st.markdown("""
         backdrop-filter: blur(14px);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
+        z-index: 5;
     }
 
     .photo-month-card:hover {
@@ -1003,11 +1004,14 @@ st.markdown("""
         .career-timeline-row.row-right .career-timeline-connector {
             left: 18px !important;
             right: auto !important;
-            width: 14px !important;
+            width: 40px !important;
+            z-index: 2 !important;
         }
         .photo-month-card {
             padding: 1.15rem 1.1rem !important;
             border-radius: 16px !important;
+            position: relative !important;
+            z-index: 5 !important;
         }
         .photo-card-titles-wrap {
             padding-right: 0 !important;
