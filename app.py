@@ -232,7 +232,7 @@ def extract_certification_items(cert_text: str) -> List[Dict[str, str]]:
         return certs
         
     # Strip raw div and html tags
-    clean_input = re.sub(r'</?(div|p|span|code|pre)[^>]*>', '', cert_text)
+    clean_input = re.sub(r'</?[^>]+>', '', cert_text)
     
     lines = clean_input.split("\n")
     current_cert = None
@@ -245,9 +245,9 @@ def extract_certification_items(cert_text: str) -> List[Dict[str, str]]:
         clean = stripped.lstrip("#*- ").rstrip("*").strip()
         clean = re.sub(r'</?[^>]+>', '', clean).strip()
         
-        if not clean or clean.lower() == "div" or clean.startswith("</"):
+        if not clean or clean.lower() in ["div", "/div", "</div>", "<div>", "</div"]:
             continue
-        
+            
         # Check if line is a cert title like "1. AWS Certified...", "**Docker Certified...**", "CKAD: ..."
         is_cert_title = (
             bool(re.match(r'^\d+[\.\)]\s+', clean)) or
@@ -265,7 +265,7 @@ def extract_certification_items(cert_text: str) -> List[Dict[str, str]]:
         elif current_cert:
             clean_desc = clean_bullet_item(stripped)
             clean_desc = re.sub(r'</?[^>]+>', '', clean_desc).strip()
-            if clean_desc and clean_desc.lower() != "div":
+            if clean_desc and clean_desc.lower() not in ["div", "/div", "</div>", "<div>", "</div"]:
                 if current_cert["desc"]:
                     current_cert["desc"] += " " + clean_desc
                 else:
@@ -277,8 +277,10 @@ def extract_certification_items(cert_text: str) -> List[Dict[str, str]]:
     # Final sanitization pass
     final_certs = []
     for c in certs:
-        c_title = re.sub(r'</?[^>]+>', '', c["title"]).strip()
+        c_title = re.sub(r'</?[^>]+>', '', c["title"]).replace('div', '').replace('/div', '').strip()
         c_desc = re.sub(r'</?[^>]+>', '', c["desc"]).strip()
+        c_desc = re.sub(r'(?i)\b/?div\b', '', c_desc).strip()
+        c_desc = c_desc.replace('</div>', '').replace('<div>', '').replace('</div', '').strip()
         if c_title and c_title.lower() != "div":
             final_certs.append({"title": c_title, "desc": c_desc})
             
@@ -1681,19 +1683,16 @@ if "career_advice_result" in st.session_state:
                     title_color = "#34d399" if is_achieved else "#ffffff"
                     icon = "🏆 " if is_achieved else "🎓 "
                     
-                    st.markdown(f"""
-                    <div class="{card_class}">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.4rem;">
-                            <div style="font-weight: 800; font-size: 1.08rem; color: {title_color};">
-                                {icon}{cert['title']}
-                            </div>
-                            <span class="{badge_class}">{badge_text}</span>
-                        </div>
-                        <div style="color: #cbd5e1; font-size: 0.92rem; line-height: 1.6; margin-bottom: 0.75rem;">
-                            {cert['desc']}
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    card_html = (
+                        f'<div class="{card_class}">'
+                        f'<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.4rem;">'
+                        f'<div style="font-weight: 800; font-size: 1.08rem; color: {title_color};">{icon}{cert["title"]}</div>'
+                        f'<span class="{badge_class}">{badge_text}</span>'
+                        f'</div>'
+                        f'<div style="color: #cbd5e1; font-size: 0.92rem; line-height: 1.6; margin-bottom: 0.75rem;">{cert["desc"]}</div>'
+                        f'</div>'
+                    )
+                    st.markdown(card_html, unsafe_allow_html=True)
                     
                     btn_label = "🏆 Achieved!" if is_achieved else "Mark as Achieved"
                     if st.button(btn_label, key=f"btn_cert_toggle_{c_idx}", use_container_width=True):
