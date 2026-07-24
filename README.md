@@ -21,19 +21,19 @@ Navigating the transition from university computer science programs or self-taug
 ### 🎯 The Agentic AI Solution
 **Career Advisor Agentic AI** overcomes these limitations by deploying an orchestrated multi-agent architecture (powered by **LangGraph**) paired with a persistent Retrieval-Augmented Generation (**ChromaDB RAG**) pipeline. Rather than relying on a single monolithic prompt, the system divides career advising into four specialized, state-driven agent nodes:
 
-1. 🔍 **Stage 1: Intent & Entity Extraction (`Intent Analysis Agent`)**
+1. **Stage 1: Intent & Entity Extraction (`Intent Analysis Agent`)**
    - Parses natural, unstructured student prompts (e.g., *"I'm a 3rd-year CS student knowing Python and SQL, wanting to become a Cloud DevOps Engineer"*).
    - Extracts current technical competencies and target career goals into structured state variables using ultra-fast LLM inference (<300ms) or dynamic heuristic extractors.
 
-2. 📖 **Stage 2: Grounded Domain Research (`Career Research Agent`)**
+2. **Stage 2: Grounded Domain Research (`Career Research Agent`)**
    - Queries a persistent vector database (**ChromaDB**) populated with curated job specifications, university benchmarks, domain roadmaps, and Sri Lankan tech sector market guides.
    - Executes dense semantic similarity searches using `sentence-transformers` (`all-MiniLM-L6-v2`) to pull grounded context into the active state.
 
-3. ⚡ **Stage 3: Comparative Skill Gap Matrix (`Skills Gap Agent`)**
+3. **Stage 3: Comparative Skill Gap Matrix (`Skills Gap Agent`)**
    - Performs automated differential analysis comparing possessed skills against target role prerequisites.
    - Identifies exact technical gaps and categorizes missing competencies into prioritized skill acquisition lists.
 
-4. 🗺️ **Stage 4: Personalized Synthesis & Actionable Roadmap (`Recommendation Agent`)**
+4. **Stage 4: Personalized Synthesis & Actionable Roadmap (`Recommendation Agent`)**
    - Synthesizes accumulated state context into a clean, structured career advisory report.
    - Generates a month-by-month learning plan, recommended industry certification paths (AWS, Azure, CKA, CompTIA), strategic Sri Lankan tech market guidance, and interactive skill tracking tools inside the web app.
 
@@ -41,23 +41,27 @@ Navigating the transition from university computer science programs or self-taug
 
 ## 🚀 Key Features
 
-- 🤖 **Multi-Agent Orchestration (LangGraph)**:
+- **Multi-Agent Orchestration (LangGraph)**:
   - **Intent Analysis Agent**: Extracts student skills and target goals.
   - **Career Research Agent**: Fetches dense RAG context from ChromaDB.
   - **Skills Gap Analysis Agent**: Identifies missing technical prerequisites.
   - **Recommendation Agent**: Synthesizes structured, empathetic career roadmaps.
-- ⚡ **Dynamic Hybrid LLM Router**:
+  
+- **Dynamic Hybrid LLM Router**:
   - **Groq (`llama-3.1-8b-instant`)**: Sub-300ms ultra-fast inference for high-frequency extractions & list comparisons.
   - **OpenRouter (`openai/gpt-4o-mini` / Claude models)**: High-reasoning model for roadmap synthesis.
   - **Dynamic Offline Fallback**: Works seamless out-of-the-box even without API keys using contextual heuristics.
-- 📚 **ChromaDB RAG Engine**:
+  
+- **ChromaDB RAG Engine**:
   - Semantic vector search using `sentence-transformers` embeddings over custom curriculum documents, job descriptions, roadmaps, and certification guides.
-- 📊 **Interactive Streamlit Dashboard**:
+  
+- **Interactive Streamlit Dashboard**:
   - **Interactive Report Hub**: Section filtering, keyword highlight search, raw markdown viewer, and 1-click Markdown export.
   - **Industry Certification Grid**: Interactive credential cards with status toggles (`Mark as Achieved`) and live counters.
   - **Live Skill Readiness Tracker**: Interactive checkboxes for missing skills with real-time `% readiness score` calculation and progress bar.
   - **RAG Knowledge Insights**: Transparent viewing of verified background sources retrieved for analysis.
-- 🐳 **Production-Ready & Lightweight Docker Container**:
+  
+- **Production-Ready & Lightweight Docker Container**:
   - Multi-stage build with `python:3.11-slim` and CPU-only PyTorch index (saves **~2.2 GB**).
   - Secure execution with a non-root user (`appuser`).
 
@@ -281,13 +285,16 @@ The project includes an enterprise-ready, multi-stage [`Dockerfile`](file:///c:/
 
 ---
 
-### ⚡ Lightweight Container Optimizations
+### Lightweight Container Optimizations
 
 Building AI and RAG applications in Docker often results in bloated multi-gigabyte container images. This project applies four key production optimizations:
 
 1. **Multi-Stage Build Pattern**: Separates compilation and package installation from runtime execution, keeping build tools and cached wheels outside the final container.
+
 2. **CPU-Only PyTorch Installation**: `sentence-transformers` requires PyTorch. By installing CPU-only wheels (`--index-url https://download.pytorch.org/whl/cpu`), GPU/CUDA binaries are excluded—**reducing final container image size by ~2.2 GB**.
+
 3. **Non-Root Security Model**: Operates as a unprivileged non-root user (`appuser`, UID `10001`) with restricted filesystem permissions.
+
 4. **Automated Container Healthchecks**: Built-in HTTP healthchecks (`curl http://localhost:8501/_stcore/health`) ensure container orchestrators automatically detect server readiness.
 
 ---
@@ -482,27 +489,4 @@ Document chunk precision and similarity scores are logged in [`rag/retrieval_eva
 
 This project is open-source software distributed under the **[MIT License](https://opensource.org/licenses/MIT)**.
 
-```text
-MIT License
-
-Copyright (c) 2026 Career Advisor Agentic AI Project
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
 
