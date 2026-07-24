@@ -1,8 +1,10 @@
 streamlit
 langgraph
 langchain
+langchain-community
 langchain-groq
 langchain-openai
 chromadb
 sentence-transformers
 python-dotenv
+pypdf
