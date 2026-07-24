@@ -1086,9 +1086,9 @@ st.markdown("""
     .report-card-box {
         background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.8) 100%);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        padding: 1.35rem 1.6rem;
-        margin-bottom: 1.25rem;
+        border-radius: 16px;
+        padding: 0.85rem 1.25rem;
+        margin-bottom: 0.85rem;
         backdrop-filter: blur(12px);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.3);
@@ -1096,17 +1096,17 @@ st.markdown("""
 
     .report-card-box:hover {
         border-color: rgba(99, 102, 241, 0.45);
-        transform: translateY(-3px);
-        box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px -10px rgba(99, 102, 241, 0.3);
     }
 
     .sl-strategic-box {
         background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.08) 100%);
         border: 1px solid rgba(16, 185, 129, 0.35);
-        border-radius: 20px;
-        padding: 1.35rem 1.6rem;
-        margin-top: 1.25rem;
-        margin-bottom: 1.25rem;
+        border-radius: 16px;
+        padding: 0.85rem 1.25rem;
+        margin-top: 0.85rem;
+        margin-bottom: 0.85rem;
         color: #e2e8f0;
         font-size: 0.95rem;
         line-height: 1.65;
@@ -1117,20 +1117,20 @@ st.markdown("""
 
     .sl-strategic-box:hover {
         border-color: rgba(16, 185, 129, 0.6);
-        transform: translateY(-3px);
-        box-shadow: 0 15px 30px -10px rgba(16, 185, 129, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px -10px rgba(16, 185, 129, 0.3);
     }
 
     .report-section-title {
-        font-size: 1.2rem;
+        font-size: 1.05rem;
         font-weight: 700;
         color: #ffffff;
-        margin-bottom: 0.85rem;
+        margin-bottom: 0.4rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        padding-bottom: 0.6rem;
+        border-bottom: none;
+        padding-bottom: 0;
     }
 
     .report-skills-container {
@@ -1285,28 +1285,70 @@ st.markdown("""
     }
 
     /* Tabs Styling */
+    /* Ultra-Modern Floating Glass Tab Navigation Bar */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 0.5rem;
-        background: rgba(15, 23, 42, 0.6);
-        padding: 0.4rem;
-        border-radius: 18px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(15, 23, 42, 0.75) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        border-radius: 20px !important;
+        padding: 6px 8px !important;
+        gap: 8px !important;
+        backdrop-filter: blur(16px) !important;
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4) !important;
+        margin-bottom: 1.5rem !important;
     }
 
-    .stTabs [data-baseweb="tab"] {
-        border-radius: 14px;
-        color: #94a3b8;
-        font-weight: 600;
-        font-size: 0.95rem;
-        padding: 0.6rem 1.25rem;
+    /* Individual Tab Buttons */
+    .stTabs button[data-baseweb="tab"] {
+        background: transparent !important;
         border: none !important;
+        border-radius: 14px !important;
+        color: #94a3b8 !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+        padding: 0.65rem 1.25rem !important;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
 
-    .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+    .stTabs button[data-baseweb="tab"]:hover {
+        color: #f8fafc !important;
+        background: rgba(255, 255, 255, 0.06) !important;
+        transform: translateY(-1px) !important;
+    }
+
+    /* Active Selected Tab with Vibrant Gradient & Glow */
+    .stTabs button[aria-selected="true"] {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #06b6d4 100%) !important;
         color: #ffffff !important;
         font-weight: 700 !important;
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3) !important;
+        box-shadow: 0 8px 25px -4px rgba(79, 70, 229, 0.5) !important;
+        border-radius: 14px !important;
+        transform: scale(1.02) !important;
+    }
+
+    /* REMOVE default flat underline highlight bar */
+    .stTabs [data-baseweb="tab-highlight"] {
+        display: none !important;
+        background-color: transparent !important;
+        height: 0 !important;
+    }
+
+    /* Silky-Smooth Hardware-Accelerated Tab Entrance Transition (Zero Glitch / Zero Shift) */
+    @keyframes tabEntranceSmooth {
+        0% {
+            opacity: 0;
+            transform: translate3d(0, 8px, 0);
+        }
+        100% {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+    .stTabs div[data-baseweb="tab-panel"] {
+        animation: tabEntranceSmooth 0.25s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+        will-change: opacity, transform !important;
+        backface-visibility: hidden !important;
+        -webkit-backface-visibility: hidden !important;
     }
 
     /* Media Queries for Mobile Responsiveness */
@@ -1338,7 +1380,7 @@ st.markdown("""
 st.markdown("""
 <div class="hero-glass-container">
     <div class="hero-badge-top">
-        <span>⚡ IT41043 Agentic AI Platform</span>
+        <span>Agentic AI Platform</span>
     </div>
     <div class="hero-title-text">🎓 Career Advisor AI</div>
     <div class="hero-subtitle-text">
@@ -1346,10 +1388,10 @@ st.markdown("""
         Analyze your technical background, identify skill gaps against market standards, and receive RAG-grounded learning roadmaps.
     </div>
     <div class="hero-chips-grid">
-        <span class="hero-chip-item">⚡ LangGraph Multi-Agent Engine</span>
-        <span class="hero-chip-item">📚 RAG Sri Lanka IT Knowledge Base</span>
-        <span class="hero-chip-item">🎯 Interactive Elevation Ladder</span>
-        <span class="hero-chip-item">🇱🇰 Local IT Market Focus 2026</span>
+        <span class="hero-chip-item">LangGraph Multi-Agent Engine</span>
+        <span class="hero-chip-item">RAG Sri Lanka IT Knowledge Base</span>
+        <span class="hero-chip-item">Interactive Elevation Ladder</span>
+        <span class="hero-chip-item">Local IT Market Focus 2026</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1361,8 +1403,8 @@ st.markdown("""
 if "user_prompt_input" not in st.session_state:
     st.session_state["user_prompt_input"] = ""
 
-st.markdown("### 📝 Enter Your Profile & Career Aspiration")
-st.caption("✨ **Choose a sample profile or click skill chips below to autofill your query:**")
+st.markdown("### Enter Your Profile & Career Aspiration")
+st.caption("Choose a sample profile or click skill chips below to autofill your query:")
 
 st.markdown('<div style="margin-top: 1rem;"></div>', unsafe_allow_html=True)
 
@@ -1373,7 +1415,7 @@ with col_p1:
     st.markdown("""
     <div class="preset-card-container">
         <div class="preset-card-title">
-            <span>🚀 DevOps Cloud</span>
+            <span>DevOps Cloud</span>
             <span class="preset-card-tag preset-tag-hot">High Demand</span>
         </div>
         <div class="preset-card-desc">Python, Java, SQL, Docker & Git student seeking DevOps Cloud Engineer path.</div>
@@ -1381,15 +1423,18 @@ with col_p1:
     """, unsafe_allow_html=True)
     if st.button("Autofill DevOps Profile", key="btn_preset_1", use_container_width=True):
         st.session_state["user_prompt_input"] = (
-            "I am a 3rd year IT student in Sri Lanka. I know Python, Java, SQL, basic Docker, and Git. "
-            "My goal is to become a DevOps Cloud Engineer."
+            "I am a 3rd year IT student with experience in Python, Java, SQL, basic Docker containerization, and Git version control. "
+            "I enjoy setting up servers, writing deployment scripts, ensuring system uptime, and configuring automated build pipelines. "
+            "I prefer system reliability and automation over frontend UI design. Please evaluate my background and preferences, "
+            "recommend the best-fit career roles for me, identify my missing technical competencies, and generate a step-by-step learning roadmap."
         )
+        st.rerun()
 
 with col_p2:
     st.markdown("""
     <div class="preset-card-container">
         <div class="preset-card-title">
-            <span>📊 AI & ML Engineer</span>
+            <span>AI & ML Engineer</span>
             <span class="preset-card-tag preset-tag-ai">AI & Big Data</span>
         </div>
         <div class="preset-card-desc">Python, Pandas, SQL & Statistics background transitioning into Machine Learning.</div>
@@ -1397,15 +1442,19 @@ with col_p2:
     """, unsafe_allow_html=True)
     if st.button("Autofill ML Profile", key="btn_preset_2", use_container_width=True):
         st.session_state["user_prompt_input"] = (
-            "I know Python, Pandas, SQL, and basic Statistics. "
-            "I want to transition into an AI/ML Engineer role in Sri Lanka."
+            "I have a solid foundation in Python, Pandas, SQL database querying, and basic statistics. "
+            "I am passionate about discovering patterns in complex datasets, building predictive machine learning models, "
+            "and working with intelligent agentic frameworks. I want to transition into an advanced AI & ML role within the next 6 to 9 months. "
+            "Please analyze my current profile, highlight missing core skills (such as PyTorch, MLOps, and vector databases), "
+            "and build a month-by-month career progression roadmap."
         )
+        st.rerun()
 
 with col_p3:
     st.markdown("""
     <div class="preset-card-container">
         <div class="preset-card-title">
-            <span>🌐 Full-Stack Architect</span>
+            <span>Full-Stack Architect</span>
             <span class="preset-card-tag preset-tag-core">Core Tech</span>
         </div>
         <div class="preset-card-desc">React, Node.js, MongoDB & CSS dev aiming for Full-Stack Software Engineer.</div>
@@ -1413,9 +1462,13 @@ with col_p3:
     """, unsafe_allow_html=True)
     if st.button("Autofill Full-Stack Profile", key="btn_preset_3", use_container_width=True):
         st.session_state["user_prompt_input"] = (
-            "I am proficient in React, HTML, CSS, JavaScript, and Node.js with MongoDB. "
-            "I want to become a Senior Full-Stack Software Engineer."
+            "I am proficient in React, JavaScript, HTML5, CSS3, Node.js, and MongoDB. "
+            "I enjoy building end-to-end web applications, designing responsive interfaces, creating RESTful backend APIs, "
+            "and scaling database schema designs. I aim to elevate my career towards a Senior Full-Stack Software Architect role. "
+            "Please conduct a comprehensive skills gap analysis on my profile, recommend missing industry-standard credentials/certifications, "
+            "and create a strategic career development path."
         )
+        st.rerun()
 
 # Generous Spacing between Profile Cards and Quick-Add Section
 st.markdown('<div style="margin-top: 2.25rem; margin-bottom: 0.85rem;"></div>', unsafe_allow_html=True)
@@ -1423,7 +1476,7 @@ st.markdown('<div style="margin-top: 2.25rem; margin-bottom: 0.85rem;"></div>', 
 # Quick-Add Skill Pills Bar
 st.markdown("""
 <div style="font-size: 1.02rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.85rem;">
-    ⚡ Quick-Add Technical Skills to your prompt:
+    Quick-Add Technical Skills to your prompt:
 </div>
 """, unsafe_allow_html=True)
 
@@ -1438,6 +1491,7 @@ for idx, skill in enumerate(quick_skills):
                     st.session_state["user_prompt_input"] = f"{current_text}, {skill}"
                 else:
                     st.session_state["user_prompt_input"] = f"I know {skill}."
+                st.rerun()
 
 # Generous Spacing between Quick-Add Skills and Text Area
 st.markdown('<div style="margin-top: 1.85rem;"></div>', unsafe_allow_html=True)
@@ -1445,7 +1499,7 @@ st.markdown('<div style="margin-top: 1.85rem;"></div>', unsafe_allow_html=True)
 # Form Text Area
 user_input = st.text_area(
     label="Describe your current technical skills, tools, languages, and target IT career role:",
-    height=130,
+    height=180,
     placeholder="e.g., I'm an IT undergraduate. I know Python, C#, MySQL, and Git. I want to become a Backend Developer.",
     key="user_prompt_input"
 )
@@ -1565,9 +1619,9 @@ if "career_advice_result" in st.session_state:
 
     # Tabbed View Navigation
     tab_roadmap, tab_skills, tab_rag = st.tabs([
-        "🪜 Career Roadmap & Elevation Ladder", 
-        "🎯 Skills Gap & Readiness Radar", 
-        "📚 RAG Knowledge Base References"
+        "Career Roadmap & Elevation Ladder", 
+        "Skills Gap & Readiness Radar", 
+        "RAG Knowledge Base References"
     ])
 
     # --------------------------------------------------------------------------
@@ -1581,14 +1635,14 @@ if "career_advice_result" in st.session_state:
         # View Selector
         view_mode = st.radio(
             "Select View Mode:",
-            ["🪜 Interactive Career Ladder", "🎯 Live Skill Readiness Tracker", "📄 Full Markdown Report"],
+            ["Career Ladder", "Live Skill Readiness Tracker", "Full Markdown Report"],
             horizontal=True,
             key="roadmap_view_mode"
         )
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        if view_mode == "🪜 Interactive Career Ladder":
+        if view_mode == "Career Ladder":
             # Profile & Feasibility Hero Card
             if parsed_sec["profile"]:
                 clean_profile = clean_text_formatting(parsed_sec["profile"])
@@ -1802,15 +1856,15 @@ if "career_advice_result" in st.session_state:
                 cleaned_advice = clean_text_formatting(parsed_sec["market_advice"])
                 st.markdown(f"""
                 <div class="sl-strategic-box">
-                    <div style="font-size: 1.2rem; font-weight: 700; color: #34d399; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid rgba(16, 185, 129, 0.25); padding-bottom: 0.6rem;">
+                    <div style="font-size: 1.05rem; font-weight: 700; color: #34d399; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
                         <span>Strategic Advice for Sri Lankan IT Market</span>
                     </div>
                     <div>{cleaned_advice}</div>
                 </div>
                 """, unsafe_allow_html=True)
 
-        elif view_mode == "🎯 Live Skill Readiness Tracker":
-            st.subheader("🎯 Skill Acquisition & Readiness Score Tracker")
+        elif view_mode == "Live Skill Readiness Tracker":
+            st.subheader("Skill Acquisition & Readiness Score Tracker")
             st.caption("Check off missing technical skills as you learn them to dynamically recalculate your readiness score!")
 
             if "learned_skills" not in st.session_state:
@@ -1823,7 +1877,7 @@ if "career_advice_result" in st.session_state:
             col_tr1, col_tr2 = st.columns(2)
 
             with col_tr1:
-                st.markdown("#### ✅ Current Strengths (Already Possessed)")
+                st.markdown("#### Current Strengths (Already Possessed)")
                 if extracted_skills:
                     badges_html = "".join([f"<span class='skill-badge-emerald'>✓ {s}</span>" for s in extracted_skills])
                     st.markdown(f"<div style='display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 0.75rem; margin-bottom: 1rem;'>{badges_html}</div>", unsafe_allow_html=True)
@@ -1832,7 +1886,7 @@ if "career_advice_result" in st.session_state:
 
 
             with col_tr2:
-                st.markdown("#### 🚨 Missing Skills to Acquire")
+                st.markdown("#### Missing Skills to Acquire")
                 for s in missing_skills:
                     chk_key = f"learned_skill_{s}"
                     checked = st.checkbox(f"I am learning / have mastered **{s}**", key=chk_key)
@@ -1847,7 +1901,7 @@ if "career_advice_result" in st.session_state:
             readiness_pct = int((current_total_possessed / total_required) * 100) if total_required > 0 else 100
 
             st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown(f"### 📈 Your Updated Role Readiness: **{readiness_pct}%**")
+            st.markdown(f"### Your Updated Role Readiness: **{readiness_pct}%**")
             st.progress(readiness_pct / 100.0)
 
             if readiness_pct >= 85:
@@ -1905,7 +1959,7 @@ if "career_advice_result" in st.session_state:
                 st.markdown("""
                 <div class="report-card-box">
                     <div class="report-section-title">
-                        <span>🎯 Target Career Profile & Feasibility</span>
+                        <span>Target Career Profile & Feasibility</span>
                     </div>
                 """, unsafe_allow_html=True)
                 if parsed_sec["profile"]:
@@ -1919,14 +1973,14 @@ if "career_advice_result" in st.session_state:
                 st.markdown("""
                 <div class="report-card-box">
                     <div class="report-section-title">
-                        <span>⚖️ Technical Strengths vs Priority Missing Skill Gaps</span>
+                        <span>Technical Strengths vs Priority Missing Skill Gaps</span>
                     </div>
                 """, unsafe_allow_html=True)
 
                 col_rep_str, col_rep_gap = st.columns(2)
 
                 with col_rep_str:
-                    st.markdown('<h5 style="color: #34d399; margin-bottom: 0.8rem;">💪 Existing Technical Strengths</h5>', unsafe_allow_html=True)
+                    st.markdown('<h5 style="color: #34d399; margin-bottom: 0.8rem;">Existing Technical Strengths</h5>', unsafe_allow_html=True)
                     if extracted_skills:
                         str_items = "".join([f'<div class="report-strength-item"><b>✓ {s}</b></div>' for s in extracted_skills])
                         st.markdown(f'<div class="report-skills-container">{str_items}</div>', unsafe_allow_html=True)
@@ -1934,7 +1988,7 @@ if "career_advice_result" in st.session_state:
                         st.info("No specific initial skills provided.")
 
                 with col_rep_gap:
-                    st.markdown('<h5 style="color: #fb7185; margin-bottom: 0.8rem;">🚨 Priority Skill Gaps to Acquire</h5>', unsafe_allow_html=True)
+                    st.markdown('<h5 style="color: #fb7185; margin-bottom: 0.8rem;">Priority Skill Gaps to Acquire</h5>', unsafe_allow_html=True)
                     if missing_skills:
                         gap_items = "".join([f'<div class="report-gap-item"><b>⚡ {s}</b></div>' for s in missing_skills])
                         st.markdown(f'<div class="report-skills-container">{gap_items}</div>', unsafe_allow_html=True)
@@ -1953,7 +2007,7 @@ if "career_advice_result" in st.session_state:
                 st.markdown(f"""
                 <div class="report-card-box">
                     <div class="report-section-title">
-                        <span>🗺️ Step-by-Step Short Learning Roadmap</span>
+                        <span>Step-by-Step Short Learning Roadmap</span>
                     </div>
                     <div>{cleaned_roadmap}</div>
                 </div>
@@ -1965,7 +2019,7 @@ if "career_advice_result" in st.session_state:
                 st.markdown(f"""
                 <div class="report-card-box">
                     <div class="report-section-title">
-                        <span>🏆 Recommended Certifications & Industry Qualifications</span>
+                        <span>Recommended Certifications & Industry Qualifications</span>
                     </div>
                     <div>{cleaned_certs}</div>
                 </div>
@@ -1976,8 +2030,8 @@ if "career_advice_result" in st.session_state:
                 cleaned_advice = clean_text_formatting(parsed_sec["market_advice"]) if parsed_sec["market_advice"] else "Local market advice."
                 st.markdown(f"""
                 <div class="sl-strategic-box">
-                    <div style="font-size: 1.2rem; font-weight: 700; color: #34d399; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid rgba(16, 185, 129, 0.25); padding-bottom: 0.6rem;">
-                        <span>🇱🇰 Strategic Advice for Sri Lankan IT Market</span>
+                    <div style="font-size: 1.05rem; font-weight: 700; color: #34d399; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>Strategic Advice for Sri Lankan IT Market</span>
                     </div>
                     <div>{cleaned_advice}</div>
                 </div>
@@ -2005,7 +2059,7 @@ if "career_advice_result" in st.session_state:
         col_sk1, col_sk2 = st.columns(2)
 
         with col_sk1:
-            st.markdown("#### ✅ Detected Technical Strengths")
+            st.markdown("#### Detected Technical Strengths")
             if extracted_skills:
                 pills = "".join([f'<span class="skill-badge-emerald">✓ {s}</span>' for s in extracted_skills])
                 st.markdown(pills, unsafe_allow_html=True)
@@ -2013,7 +2067,7 @@ if "career_advice_result" in st.session_state:
                 st.info("No specific technical skills identified in your query.")
 
         with col_sk2:
-            st.markdown("#### 🚨 Priority Missing Skill Acquisition")
+            st.markdown("#### Priority Missing Skill Acquisition")
             if missing_skills:
                 gaps_html = "".join([f'<span class="skill-badge-rose">⚡ {s}</span>' for s in missing_skills])
                 st.markdown(gaps_html, unsafe_allow_html=True)
@@ -2024,24 +2078,40 @@ if "career_advice_result" in st.session_state:
     # TAB 3: RAG KNOWLEDGE BASE REFERENCES
     # --------------------------------------------------------------------------
     with tab_rag:
-        st.markdown("#### 📖 RAG Knowledge Base References")
-        st.caption("Insights retrieved from Sri Lankan IT industry guides and curriculum datasets:")
+        st.markdown("#### Grounded Knowledge Base Insights")
+        st.caption("Verified curriculum benchmarks and domain knowledge retrieved for your analysis:")
+        st.markdown('<div style="margin-top: 1rem;"></div>', unsafe_allow_html=True)
         
         retrieved_context = result.get("retrieved_context", [])
         if retrieved_context:
-            for idx, chunk in enumerate(retrieved_context, 1):
-                with st.expander(f"📌 Knowledge Reference #{idx}", expanded=(idx == 1)):
-                    st.code(chunk, language="markdown")
+            for idx, raw_chunk in enumerate(retrieved_context, 1):
+                clean_text = raw_chunk
+                display_title = f"Knowledge Insight #{idx}"
+                
+                # Strip out any raw file path prefix like [data\roadmaps\...]:
+                if raw_chunk.startswith("[") and "]:" in raw_chunk:
+                    parts = raw_chunk.split("]: ", 1)
+                    clean_text = parts[1].strip()
+                    filename_no_ext = os.path.splitext(os.path.basename(parts[0].lstrip("[").strip()))[0]
+                    display_title = filename_no_ext.replace("_", " ").replace("-", " ").title()
+
+                # Normalize all Markdown headers (# / ## / ###) to a uniform, clean font size (h4)
+                lines = clean_text.split("\n")
+                normalized_lines = []
+                for line in lines:
+                    stripped = line.strip()
+                    if stripped.startswith("# "):
+                        normalized_lines.append(f"#### {stripped[2:].strip()}")
+                    elif stripped.startswith("## "):
+                        normalized_lines.append(f"#### {stripped[3:].strip()}")
+                    elif stripped.startswith("### "):
+                        normalized_lines.append(f"#### {stripped[4:].strip()}")
+                    else:
+                        normalized_lines.append(line)
+                
+                normalized_content = "\n".join(normalized_lines)
+
+                with st.expander(f"📌 {idx}. {display_title}", expanded=(idx <= 2)):
+                    st.markdown(normalized_content)
         else:
-            st.info("No direct external RAG context chunks were attached to this execution.")
-
-
-# ------------------------------------------------------------------------------
-# 6. Student Assignment Footer
-# ------------------------------------------------------------------------------
-st.markdown("""
-<div class="footer-glass">
-    🎓 <b>IT41043 Agentic AI Assignment</b> | Built with LangGraph, RAG, and Streamlit<br>
-    <a href="https://github.com/your-username/career-advisor-agentic-ai" target="_blank">🔗 View Project Repository on GitHub</a>
-</div>
-""", unsafe_allow_html=True)
+            st.info("No direct RAG knowledge base insights were retrieved for this query.")

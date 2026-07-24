@@ -14,12 +14,7 @@ import sys
 import os
 import json
 import re
-
-# Ensure project root is in sys.path BEFORE package imports
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
-
+from typing import Optional, List, Dict, Any
 from langchain_core.messages import SystemMessage, HumanMessage
 from agents.state import CareerAdvisorState
 from models.model_router import get_model_for_task
@@ -54,15 +49,16 @@ def intent_analysis_agent(state: CareerAdvisorState) -> CareerAdvisorState:
         "1. 'skills': A JSON list of technical skills, languages, or tools the student currently knows.\n"
         "2. 'goal': The desired target IT career role implied or mentioned by the student.\n"
         "Determine the EXACT real IT role accurately from context clues:\n"
+        "- Predictive systems, predictive modeling, discovering patterns, datasets, machine learning, PyTorch, TensorFlow, Pandas -> 'AI/ML Engineer'.\n"
+        "- Data pipelines, ETL, data engineering, big data, Spark, Kafka -> 'Data Engineer'.\n"
         "- Docker, Kubernetes, Terraform, Jenkins, CI/CD, infrastructure automation -> 'DevOps Engineer'.\n"
-        "- SQL, database management, relational databases, data querying -> 'Data Analyst' or 'Database Administrator'.\n"
-        "- PyTorch, TensorFlow, Scikit-learn, deep learning, machine learning -> 'AI/ML Engineer'.\n"
+        "- SQL, database management, relational databases, data querying, analytics -> 'Data Analyst' or 'Database Administrator'.\n"
         "- React, HTML, CSS, JavaScript, frontend -> 'Frontend Developer'.\n"
-        "- Node.js, Express, Spring Boot, REST API, microservices -> 'Backend Developer'.\n"
+        "- Node.js, Express, Spring Boot, REST API, microservices (without data analytics/predictive focus) -> 'Backend Developer'.\n"
         "- Wireshark, penetration testing, networking, ethical hacking -> 'Cybersecurity Analyst'.\n"
         "Do NOT default to Full-Stack Developer or Software Engineer when specific domain keywords exist.\n\n"
         "Return ONLY a valid JSON object in this exact format, with no Markdown wrapping or conversational text:\n"
-        '{"skills": ["Linux", "Docker", "Kubernetes"], "goal": "DevOps Engineer"}'
+        '{"skills": ["Python", "Pandas", "SQL"], "goal": "AI/ML Engineer"}'
     )
 
     messages = [
@@ -75,7 +71,7 @@ def intent_analysis_agent(state: CareerAdvisorState) -> CareerAdvisorState:
         content = response.content
         # Handle case where content is a list (e.g. tool calls / content blocks)
         if isinstance(content, list):
-            content = " ".join(str(c) for c in content if isinstance(c, str))
+            content = " ".join(c for c in content if isinstance(c, str))
         content = content.strip()
 
         # Extract JSON object from content robustly
@@ -99,9 +95,11 @@ def intent_analysis_agent(state: CareerAdvisorState) -> CareerAdvisorState:
             r"(?:goal is to become|become a|become an|aspiring|seeking|target role|target is|work as a|transition into an|transition into a|aiming for|path for)\s+([a-zA-Z0-9\s\/\-\+]+)",
             user_input, re.IGNORECASE
         )
-        if not explicit_mention:
-            extracted_goal = matrix_role
+        if explicit_mention:
+            pass
         elif extracted_goal in ["Software Engineer", "Full-Stack Developer", "Target IT Role"]:
+            extracted_goal = matrix_role
+        elif not extracted_goal:
             extracted_goal = matrix_role
 
     print(f"  [+] Extracted Skills: {extracted_skills}")
@@ -128,14 +126,16 @@ def _classify_role_by_domain_matrix(text: str) -> Optional[str]:
         ],
         "AI/ML Engineer": [
             "ai/ml", "machine learning", "deep learning", "pytorch", "tensorflow", "scikit-learn",
-            "mlops", "neural networks", "nlp", "computer vision", "llm", "pandas", "numpy"
+            "mlops", "neural networks", "nlp", "computer vision", "llm", "pandas", "numpy",
+            "predictive", "predictive systems", "discovering patterns", "patterns in complex datasets",
+            "predictive modeling", "dataset", "datasets"
         ],
         "Data Analyst": [
             "data analyst", "data analytics", "analyze data", "power bi", "tableau", "excel",
             "sql queries", "relational databases", "data manipulation", "business intelligence"
         ],
         "Data Engineer": [
-            "data engineer", "data pipeline", "apache spark", "spark", "kafka", "etl",
+            "data engineer", "data pipeline", "data pipelines", "apache spark", "spark", "kafka", "etl",
             "data warehousing", "snowflake", "bigquery", "airflow", "dbt"
         ],
         "Frontend Developer": [
