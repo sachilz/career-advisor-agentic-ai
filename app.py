@@ -774,8 +774,8 @@ st.markdown("""
        ------------------------------------------------------------------------- */
     .career-timeline-wrapper {
         position: relative;
-        max-width: 1350px;
-        width: 100%;
+        max-width: 1480px;
+        width: 98%;
         margin: 2.5rem auto;
         padding: 1rem 0;
     }
@@ -943,7 +943,7 @@ st.markdown("""
 
     .photo-card-titles-wrap {
         flex-grow: 1;
-        padding-right: 6.5rem;
+        padding-right: 7.5rem;
     }
 
     .photo-card-main-title {
@@ -1832,7 +1832,7 @@ if "career_advice_result" in st.session_state:
                     pill_completed_class = "photo-card-pill-completed" if chk else ""
                     node_completed_class = "career-timeline-node-completed" if chk else ""
                     
-                    badge_label = f"✓ {meta['badge']} COMPLETED" if chk else meta['badge']
+                    badge_label = f"✓ {meta['badge']}" if chk else meta['badge']
                     node_icon_display = "✅" if chk else meta['node_icon']
                     
                     details_html = ""
@@ -1850,7 +1850,7 @@ if "career_advice_result" in st.session_state:
                         f'<div class="photo-card-header-flex">'
                         f'<div class="photo-card-white-square">{meta["icon"]}</div>'
                         f'<div class="photo-card-titles-wrap">'
-                        f'<h3 class="photo-card-main-title">{"✅ " if chk else ""}{meta["main_title"]}</h3>'
+                        f'<h3 class="photo-card-main-title">{meta["main_title"]}</h3>'
                         f'<div class="photo-card-subtitle-cyan">{meta["subtitle"]}</div>'
                         f'</div>'
                         f'</div>'
