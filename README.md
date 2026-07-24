@@ -20,7 +20,7 @@ Navigating the transition from university computer science programs or self-taug
 
 ### 🏗 System Architecture & Workflow
 
-![Career Advisor AI Dashboard Architecture](assets/architecture.gif)
+![Career Advisor AI Dashboard Architecture](assets/ArchitectureDiagrame.gif)
 
 ---
 
