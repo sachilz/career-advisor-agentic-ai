@@ -16,6 +16,9 @@ scratch/
 *.log
 pip_list.txt
 output.txt
+out.txt
+err.txt
+res.txt
 test_out.txt
 
 # Vector DB index binaries
