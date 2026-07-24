@@ -1,25 +1,82 @@
-# Python & Virtualenv
+# ==========================================
+# Python & Virtual Environments
+# ==========================================
 **/__pycache__/
 *.pyc
 *.py[cod]
 *$py.class
 venv/
+.venv/
 env/
 ENV/
+env.bak/
+venv.bak/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
-# Environment variables & secrets
+# ==========================================
+# Environment Variables, Keys & Secrets
+# ==========================================
 .env
-.env.local
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
 
-# Temp / scratch & logs
+# ==========================================
+# Temporary, Scratch, Test & Log Files
+# ==========================================
 scratch/
+tmp/
+temp/
 *.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
 pip_list.txt
 output.txt
 out.txt
 err.txt
 res.txt
+check.txt
+diff.txt
 test_out.txt
 
-# Vector DB index binaries
+# ==========================================
+# Vector DB & Local Database Indexes
+# ==========================================
 rag/chroma_db/
+**/chroma_db/
+*.sqlite3
+*.sqlite
+*.db
+
+# ==========================================
+# OS & System Metadata
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ==========================================
+# IDE & AI Assistant Metadata
+# ==========================================
+.claude/
+.gemini/
+.agents/
+.cursor/
+.idea/
+.vs/
+*.suo
+*.user
