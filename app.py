@@ -638,6 +638,7 @@ st.markdown("""
         justify-content: center;
         align-items: center;
         box-sizing: border-box;
+        margin-bottom: 0.85rem;
     }
 
     .metric-card-glass:hover {
@@ -1378,6 +1379,15 @@ st.markdown("""
         }
         .ladder-rung-card-glass {
             padding: 1.25rem 1rem;
+        }
+        .metric-card-glass {
+            margin-bottom: 1rem !important;
+            height: auto;
+            min-height: 115px;
+            padding: 1.15rem 1rem;
+        }
+        div[data-testid="stColumn"] {
+            margin-bottom: 0.4rem;
         }
     }
 </style>
