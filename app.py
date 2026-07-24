@@ -23,6 +23,16 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger("CareerAdvisorUI")
 
 
+def toggle_cert_status(cert_key: str) -> None:
+    """Callback function to reliably toggle certification achievement status in Streamlit session state."""
+    if "achieved_certs" not in st.session_state:
+        st.session_state["achieved_certs"] = set()
+    if cert_key in st.session_state["achieved_certs"]:
+        st.session_state["achieved_certs"].discard(cert_key)
+    else:
+        st.session_state["achieved_certs"].add(cert_key)
+
+
 # ------------------------------------------------------------------------------
 # Helper Functions for Parsing & Formatting Professional Text
 # ------------------------------------------------------------------------------
@@ -1812,45 +1822,58 @@ if "career_advice_result" in st.session_state:
                     {"title": "AWS Certified Solutions Architect – Associate", "desc": "Top-tier cloud architecture certification for Sri Lankan IT undergraduates transitioning into Cloud & DevOps."}
                 ]
 
+            # Calculate achieved count specifically for currently displayed cert_items
+            achieved_count = sum(
+                1 for cert in cert_items
+                if f"cert_{cert['title'].strip()}" in st.session_state["achieved_certs"]
+            )
+
             st.markdown("<br>", unsafe_allow_html=True)
             st.markdown(f"""
             <div style="font-size: 1.25rem; font-weight: 800; color: #ffffff; margin-bottom: 0.85rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
                 <span>Industry Certification Cards Grid</span>
                 <span style="font-size: 0.9rem; color: #c084fc; font-weight: 700; background: rgba(139, 92, 246, 0.2); padding: 0.3rem 0.85rem; border-radius: 16px; border: 1px solid rgba(139, 92, 246, 0.4);">
-                    Achieved: <b>{len(st.session_state["achieved_certs"])}</b> of <b>{len(cert_items)}</b> Credentials
+                    Achieved: <b>{achieved_count}</b> of <b>{len(cert_items)}</b> Credentials
                 </span>
             </div>
             """, unsafe_allow_html=True)
 
-            cert_cols = st.columns(min(len(cert_items), 2))
-            for c_idx, cert in enumerate(cert_items):
-                cert_key = f"cert_achieved_{c_idx}"
-                is_achieved = cert_key in st.session_state["achieved_certs"]
-                
-                with cert_cols[c_idx % min(len(cert_items), 2)]:
-                    card_class = "cert-card-glass cert-card-achieved" if is_achieved else "cert-card-glass"
-                    badge_text = "✓ ACHIEVED" if is_achieved else "CREDENTIAL"
-                    badge_class = "cert-pill-tag cert-pill-achieved" if is_achieved else "cert-pill-tag"
-                    title_color = "#34d399" if is_achieved else "#ffffff"
-                    icon = "🏆 " if is_achieved else "🎓 "
+            # Render row by row in pairs of 2 columns to ensure clean widget layout without column interleaving issues
+            for row_idx in range(0, len(cert_items), 2):
+                row_items = cert_items[row_idx:row_idx+2]
+                cols = st.columns(len(row_items))
+                for col_idx, cert in enumerate(row_items):
+                    c_idx = row_idx + col_idx
+                    clean_title = cert["title"].strip()
+                    cert_key = f"cert_{clean_title}"
+                    is_achieved = cert_key in st.session_state["achieved_certs"]
                     
-                    card_html = (
-                        f'<div class="{card_class}">'
-                        f'<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.4rem;">'
-                        f'<div style="font-weight: 800; font-size: 1.08rem; color: {title_color};">{icon}{cert["title"]}</div>'
-                        f'<span class="{badge_class}">{badge_text}</span>'
-                        f'</div>'
-                        f'<div style="color: #cbd5e1; font-size: 0.92rem; line-height: 1.6; margin-bottom: 0.75rem;">{cert["desc"]}</div>'
-                        f'</div>'
-                    )
-                    st.markdown(card_html, unsafe_allow_html=True)
-                    
-                    btn_label = "🏆 Achieved!" if is_achieved else "Mark as Achieved"
-                    if st.button(btn_label, key=f"btn_cert_toggle_{c_idx}", use_container_width=True):
-                        if is_achieved:
-                            st.session_state["achieved_certs"].discard(cert_key)
-                        else:
-                            st.session_state["achieved_certs"].add(cert_key)
+                    with cols[col_idx]:
+                        card_class = "cert-card-glass cert-card-achieved" if is_achieved else "cert-card-glass"
+                        badge_text = "✓ ACHIEVED" if is_achieved else "CREDENTIAL"
+                        badge_class = "cert-pill-tag cert-pill-achieved" if is_achieved else "cert-pill-tag"
+                        title_color = "#34d399" if is_achieved else "#ffffff"
+                        icon = "🏆 " if is_achieved else "🎓 "
+                        
+                        card_html = (
+                            f'<div class="{card_class}">'
+                            f'<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.4rem;">'
+                            f'<div style="font-weight: 800; font-size: 1.08rem; color: {title_color};">{icon}{cert["title"]}</div>'
+                            f'<span class="{badge_class}">{badge_text}</span>'
+                            f'</div>'
+                            f'<div style="color: #cbd5e1; font-size: 0.92rem; line-height: 1.6; margin-bottom: 0.75rem;">{cert["desc"]}</div>'
+                            f'</div>'
+                        )
+                        st.markdown(card_html, unsafe_allow_html=True)
+                        
+                        btn_label = "🏆 Achieved!" if is_achieved else "Mark as Achieved"
+                        st.button(
+                            btn_label,
+                            key=f"btn_cert_toggle_{c_idx}_{clean_title[:15]}",
+                            use_container_width=True,
+                            on_click=toggle_cert_status,
+                            args=(cert_key,)
+                        )
 
             if parsed_sec["market_advice"]:
                 cleaned_advice = clean_text_formatting(parsed_sec["market_advice"])
