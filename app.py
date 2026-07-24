@@ -896,7 +896,9 @@ st.markdown("""
 
     /* Top Pill Tag Badge */
     .photo-card-pill {
-        float: right;
+        position: absolute;
+        top: 1.25rem;
+        right: 1.35rem;
         background: #251343;
         border: 1px solid rgba(139, 92, 246, 0.5);
         color: #00f2fe;
@@ -906,6 +908,8 @@ st.markdown("""
         border-radius: 20px;
         text-transform: uppercase;
         letter-spacing: 0.06em;
+        z-index: 5;
+        white-space: nowrap;
     }
 
     .photo-card-pill-completed {
@@ -939,6 +943,7 @@ st.markdown("""
 
     .photo-card-titles-wrap {
         flex-grow: 1;
+        padding-right: 6.5rem;
     }
 
     .photo-card-main-title {
@@ -1004,10 +1009,14 @@ st.markdown("""
             padding: 1.15rem 1.1rem !important;
             border-radius: 16px !important;
         }
+        .photo-card-titles-wrap {
+            padding-right: 0 !important;
+        }
         .photo-card-pill {
+            position: static !important;
             float: none !important;
             display: inline-block !important;
-            margin-bottom: 0.65rem !important;
+            margin-bottom: 0.75rem !important;
             font-size: 0.68rem !important;
             padding: 0.25rem 0.75rem !important;
         }
