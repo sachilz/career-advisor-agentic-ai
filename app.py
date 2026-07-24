@@ -948,6 +948,9 @@ st.markdown("""
         line-height: 1.25;
         margin: 0 0 0.2rem 0;
         font-family: 'Plus Jakarta Sans', sans-serif;
+        word-break: normal;
+        overflow-wrap: break-word;
+        hyphens: manual;
     }
 
     .photo-card-subtitle-cyan {
@@ -969,25 +972,66 @@ st.markdown("""
 
     /* Responsive Mobile Layout */
     @media (max-width: 768px) {
+        .career-timeline-wrapper {
+            padding: 0.5rem 0;
+            margin: 1rem auto;
+        }
         .career-timeline-line {
-            left: 20px;
+            left: 18px !important;
         }
         .career-timeline-row {
             width: 100% !important;
             left: 0 !important;
-            padding-left: 55px;
-            padding-right: 10px;
+            padding-left: 48px !important;
+            padding-right: 0px !important;
+            margin-bottom: 1.5rem !important;
         }
         .career-timeline-row.row-left .career-timeline-node,
         .career-timeline-row.row-right .career-timeline-node {
-            left: -2px !important;
+            left: -3px !important;
             right: auto !important;
+            width: 38px !important;
+            height: 38px !important;
+            font-size: 1.05rem !important;
         }
         .career-timeline-row.row-left .career-timeline-connector,
         .career-timeline-row.row-right .career-timeline-connector {
-            left: 20px !important;
+            left: 18px !important;
             right: auto !important;
-            width: 15px !important;
+            width: 14px !important;
+        }
+        .photo-month-card {
+            padding: 1.15rem 1.1rem !important;
+            border-radius: 16px !important;
+        }
+        .photo-card-pill {
+            float: none !important;
+            display: inline-block !important;
+            margin-bottom: 0.65rem !important;
+            font-size: 0.68rem !important;
+            padding: 0.25rem 0.75rem !important;
+        }
+        .photo-card-header-flex {
+            gap: 0.85rem !important;
+            align-items: flex-start !important;
+        }
+        .photo-card-white-square {
+            width: 46px !important;
+            height: 46px !important;
+            min-width: 46px !important;
+            font-size: 1.45rem !important;
+            border-radius: 12px !important;
+        }
+        .photo-card-main-title {
+            font-size: 1.1rem !important;
+            line-height: 1.3 !important;
+            word-break: normal !important;
+            overflow-wrap: break-word !important;
+            hyphens: manual !important;
+        }
+        .photo-card-subtitle-cyan {
+            font-size: 0.86rem !important;
+            line-height: 1.35 !important;
         }
     }
 
