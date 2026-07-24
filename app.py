@@ -850,24 +850,24 @@ st.markdown("""
         left: -22px;
     }
 
-    /* Horizontal Connector Cyan Line - Placed Behind Card */
+    /* Horizontal Connector Cyan Line - Meets Card Outer Border Flush */
     .career-timeline-connector {
         position: absolute;
         top: calc(1.8rem + 21px);
         height: 2px;
         background: #00f2fe;
         box-shadow: 0 0 10px #00f2fe;
-        z-index: 2;
+        z-index: 3;
     }
 
     .career-timeline-row.row-left .career-timeline-connector {
-        right: 0px;
-        width: 45px;
+        right: 22px;
+        width: 20px;
     }
 
     .career-timeline-row.row-right .career-timeline-connector {
-        left: 0px;
-        width: 45px;
+        left: 22px;
+        width: 20px;
     }
 
     /* Card Styling - Positioned in Front of Connector Line */
@@ -1002,10 +1002,10 @@ st.markdown("""
         }
         .career-timeline-row.row-left .career-timeline-connector,
         .career-timeline-row.row-right .career-timeline-connector {
-            left: 18px !important;
+            left: 35px !important;
             right: auto !important;
-            width: 40px !important;
-            z-index: 2 !important;
+            width: 13px !important;
+            z-index: 3 !important;
         }
         .photo-month-card {
             padding: 1.15rem 1.1rem !important;
