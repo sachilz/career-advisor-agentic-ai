@@ -82,25 +82,68 @@ def get_model_for_task(task_name: str) -> BaseChatModel:
 
         # Fallback if OpenRouter API key is placeholder or missing
         print(f"[ModelRouter] Using default fallback LLM for task '{task_name}' (No valid OPENROUTER_API_KEY provided).")
-        return _get_fallback_model(task_name)
+        return DynamicFallbackChatModel(task_name)
 
     else:
         raise ValueError(f"Unknown task name '{task_name}'. Valid tasks: intent_analysis, career_research, skills_gap, final_recommendation.")
 
 
-def _get_fallback_model(task_name: str) -> BaseChatModel:
+class DynamicFallbackChatModel:
     """
-    Internal helper returning a mock/dummy Runnable or basic ChatOpenAI instance for offline testing.
+    Dynamic fallback runnable when LLM API keys (Groq/OpenRouter) are missing or offline.
+    Extracts the user input contextually and generates dynamic, role-appropriate responses
+    instead of returning static hardcoded fallback data.
     """
-    from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
-    from langchain_core.messages import AIMessage
-    
-    # Return contextually sensible fake responses for offline testing
-    if task_name == "intent_analysis":
-        responses = [AIMessage(content='{"skills": ["Python", "Java"], "goal": "DevOps Engineer"}')]
-    elif task_name == "skills_gap":
-        responses = [AIMessage(content='["Docker", "Kubernetes", "CI/CD Pipelines", "Linux Administration", "Terraform"]')]
-    else:
-        responses = [AIMessage(content="### Career Recommendation\n\n**Recommended Role:** DevOps Engineer\n**Missing Skills:** Docker, Kubernetes, CI/CD, Linux\n**Certifications:** AWS Certified Solutions Architect Associate\n**Roadmap:** 1. Master Linux CLI -> 2. Containerization with Docker -> 3. CI/CD with GitHub Actions.")]
+    def __init__(self, task_name: str):
+        self.task_name = task_name
 
-    return FakeMessagesListChatModel(responses=responses)
+    def invoke(self, input_messages, config=None, **kwargs):
+        import json
+        import re
+        from langchain_core.messages import AIMessage, BaseMessage
+
+        # Combine input messages to extract prompt text
+        if isinstance(input_messages, list):
+            text_content = "\n".join(
+                m.content if isinstance(m, BaseMessage) else str(m) 
+                for m in input_messages
+            )
+        else:
+            text_content = str(input_messages)
+
+        if self.task_name == "intent_analysis":
+            from agents.intent_analysis_agent import _heuristic_extraction
+            skills, goal = _heuristic_extraction(text_content)
+            content = json.dumps({"skills": skills, "goal": goal})
+
+        elif self.task_name == "skills_gap":
+            from agents.skills_gap_agent import _fallback_gap_analysis
+            goal_match = re.search(r"Target Role Goal:\s*(.+)", text_content)
+            skills_match = re.search(r"Student's Current Skills:\s*\[(.*?)\]", text_content)
+
+            goal = goal_match.group(1).strip() if goal_match else "Software Engineer"
+            skills_raw = skills_match.group(1) if skills_match else ""
+            skills = [s.strip("'\" ") for s in skills_raw.split(",") if s.strip("'\" ")]
+
+            missing = _fallback_gap_analysis(skills, goal)
+            content = json.dumps(missing)
+
+        else: # final_recommendation
+            from agents.recommendation_agent import _fallback_recommendation_report
+            goal_match = re.search(r"Target Goal:\s*(.+)", text_content)
+            skills_match = re.search(r"Student's Current Known Skills:\s*\[(.*?)\]", text_content)
+            missing_match = re.search(r"Identified Missing Skills \(Gap\):\s*\[(.*?)\]", text_content)
+
+            goal = goal_match.group(1).strip() if goal_match else "Software Engineer"
+            skills_raw = skills_match.group(1) if skills_match else ""
+            missing_raw = missing_match.group(1) if missing_match else ""
+            skills = [s.strip("'\" ") for s in skills_raw.split(",") if s.strip("'\" ")]
+            missing = [m.strip("'\" ") for m in missing_raw.split(",") if m.strip("'\" ")]
+
+            content = _fallback_recommendation_report(goal, skills, missing)
+
+        return AIMessage(content=content)
+
+
+def _get_fallback_model(task_name: str):
+    return DynamicFallbackChatModel(task_name)
