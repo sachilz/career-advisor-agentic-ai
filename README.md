@@ -18,6 +18,12 @@ Navigating the transition from university computer science programs or self-taug
 
 ---
 
+### 🏗 System Architecture & Workflow
+
+![Career Advisor AI Dashboard Architecture](assets/Architecture.gif)
+
+---
+
 ### 🎯 The Agentic AI Solution
 **Career Advisor Agentic AI** overcomes these limitations by deploying an orchestrated multi-agent architecture (powered by **LangGraph**) paired with a persistent Retrieval-Augmented Generation (**ChromaDB RAG**) pipeline. Rather than relying on a single monolithic prompt, the system divides career advising into four specialized, state-driven agent nodes:
 
@@ -60,38 +66,6 @@ Navigating the transition from university computer science programs or self-taug
 - 🐳 **Production-Ready & Lightweight Docker Container**:
   - Multi-stage build with `python:3.11-slim` and CPU-only PyTorch index (saves **~2.2 GB**).
   - Secure execution with a non-root user (`appuser`).
-
----
-
-## 🏗 System Architecture & Workflow
-
-```mermaid
-flowchart TD
-    A[Student Input / Quick Prompt] --> B[LangGraph StateGraph Workflow]
-    
-    subgraph Agentic Orchestration
-        B --> C[Intent Analysis Agent]
-        C -->|Extracted Skills & Goal| D[Career Research Agent]
-        D <-->|Dense Retrieval| E[(ChromaDB Vector Store)]
-        D -->|Retrieved Context| F[Skills Gap Agent]
-        F -->|Missing Skills List| G[Recommendation Agent]
-    end
-    
-    subgraph Hybrid Model Router
-        C -.->|Groq Llama-3.1-8b| Router1[Ultra-fast Extraction]
-        F -.->|Groq Llama-3.1-8b| Router2[Gap Comparison]
-        G -.->|OpenRouter GPT-4o-mini| Router3[Roadmap Synthesis]
-    end
-    
-    G --> H[Streamlit Interactive UI]
-    
-    subgraph Streamlit UI Tabs
-        H --> Tab1[📊 Interactive Report Hub]
-        H --> Tab2[🏆 Certification Cards Grid]
-        H --> Tab3[📈 Live Skill Readiness Tracker]
-        H --> Tab4[📌 RAG Knowledge Insights]
-    end
-```
 
 ---
 
