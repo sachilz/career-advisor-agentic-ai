@@ -436,7 +436,7 @@ def render_interactive_agent_progress(current_phase: int) -> str:
     
     cards_html = ""
     for p in phases:
-        p_num = p["num"]
+        p_num = int(p["num"])
         if current_phase > p_num:
             card_class = "agent-step-card agent-step-card-completed"
             tag_html = '<span class="agent-tag-completed">COMPLETED</span>'
@@ -2404,7 +2404,7 @@ if "career_advice_result" in st.session_state:
         with col_sk1:
             st.markdown("#### Detected Technical Strengths")
             if extracted_skills:
-                pills = "".join([f'<span class="skill-badge-emerald">✓ {s}</span>' for s in extracted_skills])
+                pills = "".join([f'<span class="skill-badge-emerald">{s}</span>' for s in extracted_skills])
                 st.markdown(pills, unsafe_allow_html=True)
             else:
                 st.info("No specific technical skills identified in your query.")
@@ -2412,7 +2412,7 @@ if "career_advice_result" in st.session_state:
         with col_sk2:
             st.markdown("#### Priority Missing Skill Acquisition")
             if missing_skills:
-                gaps_html = "".join([f'<span class="skill-badge-rose">⚡ {s}</span>' for s in missing_skills])
+                gaps_html = "".join([f'<span class="skill-badge-rose">{s}</span>' for s in missing_skills])
                 st.markdown(gaps_html, unsafe_allow_html=True)
             else:
                 st.success("🎉 You possess all primary technical prerequisites for this role!")
