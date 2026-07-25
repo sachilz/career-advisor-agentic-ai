@@ -2325,7 +2325,7 @@ if "career_advice_result" in st.session_state:
                 with col_rep_str:
                     st.markdown('<h5 style="color: #34d399; margin-bottom: 0.8rem;">Existing Technical Strengths</h5>', unsafe_allow_html=True)
                     if extracted_skills:
-                        str_items = "".join([f'<div class="report-strength-item"><b>✓ {s}</b></div>' for s in extracted_skills])
+                        str_items = "".join([f'<div class="report-strength-item"><b>{s}</b></div>' for s in extracted_skills])
                         st.markdown(f'<div class="report-skills-container">{str_items}</div>', unsafe_allow_html=True)
                     else:
                         st.info("No specific initial skills provided.")
@@ -2333,7 +2333,7 @@ if "career_advice_result" in st.session_state:
                 with col_rep_gap:
                     st.markdown('<h5 style="color: #fb7185; margin-bottom: 0.8rem;">Priority Skill Gaps to Acquire</h5>', unsafe_allow_html=True)
                     if missing_skills:
-                        gap_items = "".join([f'<div class="report-gap-item"><b>⚡ {s}</b></div>' for s in missing_skills])
+                        gap_items = "".join([f'<div class="report-gap-item"><b>{s}</b></div>' for s in missing_skills])
                         st.markdown(f'<div class="report-skills-container">{gap_items}</div>', unsafe_allow_html=True)
                     else:
                         st.success("No major skill gaps identified!")
