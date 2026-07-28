@@ -1952,10 +1952,10 @@ st.markdown("### Enter Your Profile & Career Aspiration")
 if st.session_state.get("show_autofill_notice", False):
     st.markdown("""
     <div class="autofill-info-banner">
-        <span>✨ Profile Query Autofilled! Review prompt in the text box below & click <b>Generate Career Advice & Roadmap</b> ↑</span>
+        <span>Profile Query Autofilled! Review prompt in the text box below & click <b>Generate Career Advice & Roadmap</b> ↑</span>
     </div>
     """, unsafe_allow_html=True)
-    st.toast("✨ Profile Autofilled! Review the prompt below and click 'Generate Career Advice & Roadmap'")
+    st.toast("Profile Autofilled! Review the prompt below and click 'Generate Career Advice & Roadmap'")
     st.session_state["show_autofill_notice"] = False
 
 # Form Text Area (Main User Input)
