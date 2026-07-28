@@ -1879,6 +1879,19 @@ st.markdown("""
 if "user_prompt_input" not in st.session_state:
     st.session_state["user_prompt_input"] = ""
 
+def set_autofill_prompt(prompt_text: str) -> None:
+    """Callback function to safely update session state before widget rendering."""
+    st.session_state["user_prompt_input"] = prompt_text
+
+def append_skill_prompt(skill_name: str) -> None:
+    """Callback function to safely append skill chips to prompt input."""
+    current_text = st.session_state.get("user_prompt_input", "").strip()
+    if skill_name not in current_text:
+        if current_text:
+            st.session_state["user_prompt_input"] = f"{current_text}, {skill_name}"
+        else:
+            st.session_state["user_prompt_input"] = f"I know {skill_name}."
+
 st.markdown("### Enter Your Profile & Career Aspiration")
 
 # Form Text Area (Main User Input)
@@ -1909,14 +1922,7 @@ col_chips = st.columns(6)
 quick_skills = ["Python", "React", "Docker", "SQL", "AWS", "FastAPI"]
 for idx, skill in enumerate(quick_skills):
     with col_chips[idx % 6]:
-        if st.button(f"+ {skill}", key=f"chip_skill_{skill}", use_container_width=True):
-            current_text = st.session_state.get("user_prompt_input", "").strip()
-            if skill not in current_text:
-                if current_text:
-                    st.session_state["user_prompt_input"] = f"{current_text}, {skill}"
-                else:
-                    st.session_state["user_prompt_input"] = f"I know {skill}."
-                st.rerun()
+        st.button(f"+ {skill}", key=f"chip_skill_{skill}", use_container_width=True, on_click=append_skill_prompt, args=(skill,))
 
 st.markdown('<div style="margin-top: 2rem; margin-bottom: 0.85rem;"></div>', unsafe_allow_html=True)
 
@@ -1929,6 +1935,49 @@ st.markdown("""
 
 col_r1_1, col_r1_2, col_r1_3 = st.columns(3)
 
+qa_text = (
+    "I have experience in manual software testing, writing test cases, Python, Java, Postman API testing, and basic Selenium. "
+    "I want to transition into an Automation QA / Software Test Engineer role. "
+    "Please analyze my current background, identify missing automation & performance testing skills, "
+    "and create a step-by-step career progression roadmap."
+)
+
+ba_text = (
+    "I have an IT background with skills in SQL database querying, UML diagramming, requirements gathering, writing user stories, "
+    "and working with Jira in Agile/Scrum teams. I aim to become a professional Business Analyst (BA) or Systems Analyst. "
+    "Please evaluate my profile, highlight missing business analysis competencies, and generate a learning roadmap."
+)
+
+ml_text = (
+    "I have a solid foundation in Python, Pandas, SQL database querying, and basic statistics. "
+    "I am passionate about discovering patterns in complex datasets, building predictive machine learning models, "
+    "and working with intelligent agentic frameworks. I want to transition into an advanced AI & ML role within the next 6 to 9 months. "
+    "Please analyze my current profile, highlight missing core skills (such as PyTorch, MLOps, and vector databases), "
+    "and build a month-by-month career progression roadmap."
+)
+
+devops_text = (
+    "I am a 3rd year IT student with experience in Python, Java, SQL, basic Docker containerization, and Git version control. "
+    "I enjoy setting up servers, writing deployment scripts, ensuring system uptime, and configuring automated build pipelines. "
+    "I prefer system reliability and automation over frontend UI design. Please evaluate my background and preferences, "
+    "recommend the best-fit career roles for me, identify my missing technical competencies, and generate a step-by-step learning roadmap."
+)
+
+sys_text = (
+    "I have hands-on experience in Linux & Windows server administration, bash and PowerShell scripting, "
+    "networking fundamentals (TCP/IP, DNS, VPNs, Firewalls), and system troubleshooting. "
+    "I want to become a Senior Systems Administrator or Cloud Infrastructure Engineer. "
+    "Please analyze my current skills, highlight missing infrastructure & cloud certifications, and provide a career roadmap."
+)
+
+fullstack_text = (
+    "I am proficient in React, JavaScript, HTML5, CSS3, Node.js, and MongoDB. "
+    "I enjoy building end-to-end web applications, designing responsive interfaces, creating RESTful backend APIs, "
+    "and scaling database schema designs. I aim to elevate my career towards a Senior Full-Stack Software Architect role. "
+    "Please conduct a comprehensive skills gap analysis on my profile, recommend missing industry-standard credentials/certifications, "
+    "and create a strategic career development path."
+)
+
 with col_r1_1:
     st.markdown("""
     <div class="preset-card-container">
@@ -1939,14 +1988,7 @@ with col_r1_1:
         <div class="preset-card-desc">Manual testing, test cases, Postman, Python/Java & Selenium aiming for Automation QA Engineer.</div>
     </div>
     """, unsafe_allow_html=True)
-    if st.button("Autofill QA Profile", key="btn_preset_qa", use_container_width=True):
-        st.session_state["user_prompt_input"] = (
-            "I have experience in manual software testing, writing test cases, Python, Java, Postman API testing, and basic Selenium. "
-            "I want to transition into an Automation QA / Software Test Engineer role. "
-            "Please analyze my current background, identify missing automation & performance testing skills, "
-            "and create a step-by-step career progression roadmap."
-        )
-        st.rerun()
+    st.button("Autofill QA Profile", key="btn_preset_qa", use_container_width=True, on_click=set_autofill_prompt, args=(qa_text,))
 
 with col_r1_2:
     st.markdown("""
@@ -1958,13 +2000,7 @@ with col_r1_2:
         <div class="preset-card-desc">Requirements gathering, user stories, Jira/Agile, SQL & UML diagrams aiming for BA role.</div>
     </div>
     """, unsafe_allow_html=True)
-    if st.button("Autofill BA Profile", key="btn_preset_ba", use_container_width=True):
-        st.session_state["user_prompt_input"] = (
-            "I have an IT background with skills in SQL database querying, UML diagramming, requirements gathering, writing user stories, "
-            "and working with Jira in Agile/Scrum teams. I aim to become a professional Business Analyst (BA) or Systems Analyst. "
-            "Please evaluate my profile, highlight missing business analysis competencies, and generate a learning roadmap."
-        )
-        st.rerun()
+    st.button("Autofill BA Profile", key="btn_preset_ba", use_container_width=True, on_click=set_autofill_prompt, args=(ba_text,))
 
 with col_r1_3:
     st.markdown("""
@@ -1976,15 +2012,7 @@ with col_r1_3:
         <div class="preset-card-desc">Python, Pandas, SQL & Statistics background transitioning into Machine Learning.</div>
     </div>
     """, unsafe_allow_html=True)
-    if st.button("Autofill ML Profile", key="btn_preset_ml", use_container_width=True):
-        st.session_state["user_prompt_input"] = (
-            "I have a solid foundation in Python, Pandas, SQL database querying, and basic statistics. "
-            "I am passionate about discovering patterns in complex datasets, building predictive machine learning models, "
-            "and working with intelligent agentic frameworks. I want to transition into an advanced AI & ML role within the next 6 to 9 months. "
-            "Please analyze my current profile, highlight missing core skills (such as PyTorch, MLOps, and vector databases), "
-            "and build a month-by-month career progression roadmap."
-        )
-        st.rerun()
+    st.button("Autofill ML Profile", key="btn_preset_ml", use_container_width=True, on_click=set_autofill_prompt, args=(ml_text,))
 
 st.markdown('<div style="margin-top: 0.75rem;"></div>', unsafe_allow_html=True)
 
@@ -2000,14 +2028,7 @@ with col_r2_1:
         <div class="preset-card-desc">Python, Java, SQL, Docker & Git student seeking DevOps Cloud Engineer path.</div>
     </div>
     """, unsafe_allow_html=True)
-    if st.button("Autofill DevOps Profile", key="btn_preset_devops", use_container_width=True):
-        st.session_state["user_prompt_input"] = (
-            "I am a 3rd year IT student with experience in Python, Java, SQL, basic Docker containerization, and Git version control. "
-            "I enjoy setting up servers, writing deployment scripts, ensuring system uptime, and configuring automated build pipelines. "
-            "I prefer system reliability and automation over frontend UI design. Please evaluate my background and preferences, "
-            "recommend the best-fit career roles for me, identify my missing technical competencies, and generate a step-by-step learning roadmap."
-        )
-        st.rerun()
+    st.button("Autofill DevOps Profile", key="btn_preset_devops", use_container_width=True, on_click=set_autofill_prompt, args=(devops_text,))
 
 with col_r2_2:
     st.markdown("""
@@ -2019,14 +2040,7 @@ with col_r2_2:
         <div class="preset-card-desc">Linux, Windows Server, Networking (TCP/IP, DNS) & Bash/PowerShell aiming for SysAdmin.</div>
     </div>
     """, unsafe_allow_html=True)
-    if st.button("Autofill SysAdmin Profile", key="btn_preset_sysadmin", use_container_width=True):
-        st.session_state["user_prompt_input"] = (
-            "I have hands-on experience in Linux & Windows server administration, bash and PowerShell scripting, "
-            "networking fundamentals (TCP/IP, DNS, VPNs, Firewalls), and system troubleshooting. "
-            "I want to become a Senior Systems Administrator or Cloud Infrastructure Engineer. "
-            "Please analyze my current skills, highlight missing infrastructure & cloud certifications, and provide a career roadmap."
-        )
-        st.rerun()
+    st.button("Autofill SysAdmin Profile", key="btn_preset_sysadmin", use_container_width=True, on_click=set_autofill_prompt, args=(sys_text,))
 
 with col_r2_3:
     st.markdown("""
@@ -2038,15 +2052,7 @@ with col_r2_3:
         <div class="preset-card-desc">React, Node.js, MongoDB & CSS dev aiming for Full-Stack Software Engineer.</div>
     </div>
     """, unsafe_allow_html=True)
-    if st.button("Autofill Full-Stack Profile", key="btn_preset_fullstack", use_container_width=True):
-        st.session_state["user_prompt_input"] = (
-            "I am proficient in React, JavaScript, HTML5, CSS3, Node.js, and MongoDB. "
-            "I enjoy building end-to-end web applications, designing responsive interfaces, creating RESTful backend APIs, "
-            "and scaling database schema designs. I aim to elevate my career towards a Senior Full-Stack Software Architect role. "
-            "Please conduct a comprehensive skills gap analysis on my profile, recommend missing industry-standard credentials/certifications, "
-            "and create a strategic career development path."
-        )
-        st.rerun()
+    st.button("Autofill Full-Stack Profile", key="btn_preset_fullstack", use_container_width=True, on_click=set_autofill_prompt, args=(fullstack_text,))
 
 
 # ------------------------------------------------------------------------------
