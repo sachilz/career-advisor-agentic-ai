@@ -691,7 +691,7 @@ st.markdown("""
         padding: 1.25rem;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
-        margin-bottom: 0.85rem;
+        margin-bottom: 1.25rem;
         backdrop-filter: blur(12px);
         min-height: 140px;
         display: flex;
@@ -766,6 +766,7 @@ st.markdown("""
         box-sizing: border-box;
         backdrop-filter: blur(12px);
         position: relative;
+        margin-bottom: 1.25rem;
     }
 
     .company-card-glass:hover {
@@ -1837,13 +1838,19 @@ st.markdown("""
             padding: 1.25rem 1rem;
         }
         .metric-card-glass {
-            margin-bottom: 1rem !important;
+            margin-bottom: 1.25rem !important;
             height: auto;
             min-height: 115px;
             padding: 1.15rem 1rem;
         }
-        div[data-testid="stColumn"] {
-            margin-bottom: 0.4rem;
+        .company-card-glass {
+            margin-bottom: 1.25rem !important;
+        }
+        .preset-card-container {
+            margin-bottom: 1.25rem !important;
+        }
+        div[data-testid="stColumn"], div[data-testid="column"] {
+            margin-bottom: 0.6rem;
         }
     }
 </style>
@@ -1883,15 +1890,6 @@ def set_autofill_prompt(prompt_text: str) -> None:
     """Callback function to safely update session state before widget rendering."""
     st.session_state["user_prompt_input"] = prompt_text
 
-def append_skill_prompt(skill_name: str) -> None:
-    """Callback function to safely append skill chips to prompt input."""
-    current_text = st.session_state.get("user_prompt_input", "").strip()
-    if skill_name not in current_text:
-        if current_text:
-            st.session_state["user_prompt_input"] = f"{current_text}, {skill_name}"
-        else:
-            st.session_state["user_prompt_input"] = f"I know {skill_name}."
-
 st.markdown("### Enter Your Profile & Career Aspiration")
 
 # Form Text Area (Main User Input)
@@ -1909,21 +1907,6 @@ with submit_col1:
     submit_btn = st.button("Generate Career Advice & Roadmap", type="primary", use_container_width=True)
 
 # Spacing
-st.markdown('<div style="margin-top: 1.85rem; margin-bottom: 0.85rem;"></div>', unsafe_allow_html=True)
-
-# Quick-Add Skill Pills Bar
-st.markdown("""
-<div style="font-size: 1.02rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.85rem;">
-    Quick-Add Technical Skills to your prompt:
-</div>
-""", unsafe_allow_html=True)
-
-col_chips = st.columns(6)
-quick_skills = ["Python", "React", "Docker", "SQL", "AWS", "FastAPI"]
-for idx, skill in enumerate(quick_skills):
-    with col_chips[idx % 6]:
-        st.button(f"+ {skill}", key=f"chip_skill_{skill}", use_container_width=True, on_click=append_skill_prompt, args=(skill,))
-
 st.markdown('<div style="margin-top: 2rem; margin-bottom: 0.85rem;"></div>', unsafe_allow_html=True)
 
 # Sample Profile Preset Cards (6 Popular IT Career Tracks)
