@@ -824,6 +824,44 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
     }
 
+    /* Button Instant Processing Loading Indicator */
+    .button-loading-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.55rem 1.1rem;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(139, 92, 246, 0.25) 100%);
+        border: 1px solid rgba(139, 92, 246, 0.5);
+        border-radius: 14px;
+        color: #c084fc;
+        font-size: 0.88rem;
+        font-weight: 700;
+        backdrop-filter: blur(10px);
+        margin-top: 0.2rem;
+        animation: pulseGlow 2s infinite alternate;
+    }
+
+    .btn-spinner {
+        width: 18px;
+        height: 18px;
+        border: 2.5px solid rgba(192, 132, 252, 0.25);
+        border-top-color: #38bdf8;
+        border-right-color: #c084fc;
+        border-radius: 50%;
+        animation: spin 0.75s linear infinite;
+        flex-shrink: 0;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulseGlow {
+        0% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.25); }
+        100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.55); }
+    }
+
     /* Metric Stat Box */
     .metric-card-glass {
         background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
@@ -1902,9 +1940,11 @@ user_input = st.text_area(
 
 st.markdown('<div style="margin-top: 0.85rem;"></div>', unsafe_allow_html=True)
 
-submit_col1, submit_col2 = st.columns([1.5, 3.5])
+submit_col1, submit_col2 = st.columns([1.6, 3.4])
 with submit_col1:
     submit_btn = st.button("Generate Career Advice & Roadmap", type="primary", use_container_width=True)
+
+btn_loading_placeholder = submit_col2.empty()
 
 # Spacing
 st.markdown('<div style="margin-top: 2rem; margin-bottom: 0.85rem;"></div>', unsafe_allow_html=True)
@@ -2144,6 +2184,13 @@ if submit_btn:
     if not current_input:
         st.warning("Please enter your current skills and target career goal before submitting.")
     else:
+        btn_loading_placeholder.markdown("""
+        <div class="button-loading-indicator">
+            <div class="btn-spinner"></div>
+            <span>Processing AI Workflow... Scroll Down to View Execution ↓</span>
+        </div>
+        """, unsafe_allow_html=True)
+        
         # Load API keys via secrets helper
         groq_key = get_secret("GROQ_API_KEY")
         openrouter_key = get_secret("OPENROUTER_API_KEY")
