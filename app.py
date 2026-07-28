@@ -3,6 +3,7 @@ import os
 import logging
 import time
 import re
+import base64
 from typing import Dict, Any, List, cast
 
 # Ensure project root directory is in sys.path BEFORE package imports
@@ -18,6 +19,35 @@ from agents.state import CareerAdvisorState
 # Configure console logger for debugging runtime errors
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("CareerAdvisorUI")
+
+
+def get_asset_base64(filename: str) -> str:
+    """Reads a local image asset and returns a base64 Data URI string for HTML embedding."""
+    candidates = [filename]
+    
+    # Auto-detect variations like WS02.png vs WSO2.jpg, Virtusa.png vs Virtusa.jpg
+    lower_f = filename.lower()
+    if "wso2" in lower_f or "ws02" in lower_f:
+        candidates.extend(["WS02.png", "WSO2.png", "WSO2.jpg", "WS02.jpg"])
+    elif "virtusa" in lower_f:
+        candidates.extend(["Virtusa.png", "virtusa.png", "Virtusa.jpg", "virtusa.jpg"])
+    elif "lseg" in lower_f:
+        candidates.extend(["LSEG.png", "LSEG.jpg", "LSEG.jpeg"])
+    elif "ifs" in lower_f:
+        candidates.extend(["IFS.png", "IFS.jpg", "IFS.jpeg"])
+        
+    for cand in candidates:
+        file_path = os.path.join(PROJECT_ROOT, "assets", cand)
+        if os.path.exists(file_path):
+            ext = os.path.splitext(cand)[1].lower().lstrip(".")
+            mime_type = "image/jpeg" if ext in ["jpg", "jpeg"] else f"image/{ext}"
+            try:
+                with open(file_path, "rb") as f:
+                    encoded = base64.b64encode(f.read()).decode("utf-8")
+                    return f"data:{mime_type};base64,{encoded}"
+            except Exception as e:
+                logger.warning(f"Error loading asset '{cand}': {e}")
+    return ""
 
 
 def toggle_cert_status(cert_key: str) -> None:
@@ -350,13 +380,24 @@ def extract_certification_items(cert_text: str) -> List[Dict[str, str]]:
 
 
 def get_month_card_metadata(title_text: str, details_list: List[str], idx: int) -> Dict[str, str]:
-    """Extract visual design metadata for photo-style monthly career ladder timeline cards."""
+    """Extract visual design metadata for photo-style monthly career ladder timeline cards with 3D icons."""
     clean_title = title_text.replace('**', '').replace('##', '').replace('###', '').strip()
     
     default_icons = ["💻", "🐳", "⚙️", "☸️", "☁️", "💼", "🧠", "📊"]
+    default_3d_urls = [
+        "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Laptop.png",
+        "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Spouting%20Whale.png",
+        "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Gear.png",
+        "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Anchor.png",
+        "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Cloud.png",
+        "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Briefcase.png",
+        "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Robot.png",
+        "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Bar%20Chart.png"
+    ]
     default_nodes = ["🎓", "⚡", "🔄", "🏛️", "🌐", "🏆", "🎯", "🚀"]
     
     icon = default_icons[(idx - 1) % len(default_icons)]
+    icon_3d_url = default_3d_urls[(idx - 1) % len(default_3d_urls)]
     node = default_nodes[(idx - 1) % len(default_nodes)]
     badge = f"MONTH {idx:02d}" if idx <= 99 else f"STEP {idx}"
     
@@ -375,42 +416,52 @@ def get_month_card_metadata(title_text: str, details_list: List[str], idx: int) 
     
     if "linux" in lower_t or "system" in lower_t or "os" in lower_t:
         icon = "💻"
+        icon_3d_url = "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Laptop.png"
         node = "🎓"
         subtitle = "Linux CLI, System Administration & Bash"
     elif "docker" in lower_t or "container" in lower_t:
         icon = "🐳"
+        icon_3d_url = "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Spouting%20Whale.png"
         node = "⚡"
         subtitle = "Containerization & Multi-Container Deployment"
     elif "ci/cd" in lower_t or "jenkins" in lower_t or "github action" in lower_t or "automation" in lower_t or "pipeline" in lower_t:
         icon = "⚙️"
+        icon_3d_url = "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Gear.png"
         node = "🔄"
         subtitle = "Automated Delivery Pipelines & Workflow Automation"
     elif "kubernetes" in lower_t or "k8s" in lower_t or "orchestr" in lower_t:
         icon = "☸️"
+        icon_3d_url = "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Anchor.png"
         node = "🏛️"
         subtitle = "Container Orchestration, Clusters & Helm"
     elif "terraform" in lower_t or "cloud" in lower_t or "aws" in lower_t or "iac" in lower_t or "azure" in lower_t:
         icon = "☁️"
+        icon_3d_url = "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Cloud.png"
         node = "🌐"
         subtitle = "Infrastructure as Code & Cloud Computing"
     elif "sri lanka" in lower_t or "interview" in lower_t or "career" in lower_t or "portfolio" in lower_t or "cert" in lower_t:
         icon = "💼"
+        icon_3d_url = "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Briefcase.png"
         node = "🏆"
         subtitle = "Sri Lanka IT Industry Execution & Certification"
     elif "python" in lower_t or "programming" in lower_t or "backend" in lower_t:
         icon = "🐍"
+        icon_3d_url = "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Snake.png"
         node = "💻"
         subtitle = "Backend Development & Software Architecture"
     elif "react" in lower_t or "frontend" in lower_t or "web" in lower_t or "js" in lower_t:
         icon = "⚛️"
+        icon_3d_url = "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Activities/Artist%20Palette.png"
         node = "🎨"
         subtitle = "Modern Web Frontend & UI Applications"
     elif "data" in lower_t or "sql" in lower_t or "database" in lower_t:
         icon = "📊"
+        icon_3d_url = "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Bar%20Chart.png"
         node = "🗄️"
         subtitle = "Database Engineering & Data Management"
     elif "ai" in lower_t or "machine learning" in lower_t or "llm" in lower_t or "agent" in lower_t:
         icon = "🧠"
+        icon_3d_url = "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Robot.png"
         node = "🤖"
         subtitle = "Artificial Intelligence & Agentic AI Architecture"
         
@@ -419,6 +470,7 @@ def get_month_card_metadata(title_text: str, details_list: List[str], idx: int) 
         "main_title": main_title,
         "subtitle": subtitle,
         "icon": icon,
+        "icon_3d_url": icon_3d_url,
         "node_icon": node
     }
 
@@ -675,12 +727,100 @@ st.markdown("""
     .preset-tag-hot { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
     .preset-tag-ai { background: rgba(139, 92, 246, 0.15); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.3); }
     .preset-tag-core { background: rgba(6, 182, 212, 0.15); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.3); }
+    .preset-tag-qa { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .preset-tag-ba { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .preset-tag-sys { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
 
     .preset-card-desc {
         font-size: 0.85rem;
         color: #94a3b8;
         line-height: 1.45;
         margin-bottom: 0.4rem;
+    }
+
+    /* Company Career Portals Showcase Cards */
+    .company-showcase-container {
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.8) 100%);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        border-radius: 24px;
+        padding: 1.5rem 1.75rem;
+        margin-bottom: 1.5rem;
+        backdrop-filter: blur(16px);
+        box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.5);
+    }
+    
+    .company-card-glass {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 1.25rem 1rem;
+        text-align: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 170px;
+        height: 100%;
+        text-decoration: none !important;
+        box-sizing: border-box;
+        backdrop-filter: blur(12px);
+        position: relative;
+    }
+
+    .company-card-glass:hover {
+        border-color: var(--card-border-hover);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.25);
+    }
+
+    .company-logo-img {
+        height: 42px !important;
+        max-height: 42px !important;
+        width: 140px !important;
+        max-width: 140px !important;
+        object-fit: contain !important;
+        display: block !important;
+        margin: 0 auto 0.4rem auto !important;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+        transition: transform 0.3s ease;
+    }
+
+    .company-card-glass:hover .company-logo-img {
+        transform: scale(1.08);
+    }
+
+    .company-badge-tag {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.2rem 0.6rem;
+        border-radius: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.5rem;
+    }
+
+    .company-link-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        width: 100%;
+        padding: 0.45rem 0.75rem;
+        border-radius: 12px;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%);
+        border: 1px solid rgba(139, 92, 246, 0.5);
+        color: #f8fafc !important;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-decoration: none !important;
+        transition: all 0.25s ease;
+    }
+
+    .company-card-glass:hover .company-link-btn {
+        background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+        border-color: #00f2fe;
+        box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
     }
 
     /* Metric Stat Box */
@@ -989,19 +1129,37 @@ st.markdown("""
         margin-bottom: 0.85rem;
     }
 
-    .photo-card-white-square {
-        width: 58px;
-        height: 58px;
-        min-width: 58px;
-        background: #ffffff;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 20px rgba(255, 255, 255, 0.25);
-        font-size: 1.85rem;
-        line-height: 1;
-        box-sizing: border-box;
+    /* 3D Icon Container - Transparent 3D Glassmorphism (NO WHITE BACKGROUND) */
+    .photo-card-3d-square, .photo-card-white-square {
+        width: 64px;
+        height: 64px;
+        min-width: 64px;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(6, 182, 212, 0.18) 100%) !important;
+        border: 1px solid rgba(0, 242, 254, 0.4) !important;
+        border-radius: 18px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 242, 254, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+        backdrop-filter: blur(16px) !important;
+        box-sizing: border-box !important;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        transform: perspective(600px) rotateX(8deg) rotateY(-8deg);
+    }
+
+    .photo-month-card:hover .photo-card-3d-square,
+    .photo-month-card:hover .photo-card-white-square {
+        transform: perspective(600px) rotateX(0deg) rotateY(0deg) scale(1.08) !important;
+        border-color: rgba(0, 242, 254, 0.75) !important;
+        box-shadow: 0 15px 35px -5px rgba(0, 242, 254, 0.55), inset 0 1px 2px rgba(255, 255, 255, 0.4) !important;
+    }
+
+    .photo-card-3d-icon-img {
+        width: 46px;
+        height: 46px;
+        object-fit: contain;
+        filter: drop-shadow(0 6px 12px rgba(0, 242, 254, 0.45));
+        transition: transform 0.3s ease;
     }
 
     .photo-card-titles-wrap {
@@ -1722,74 +1880,23 @@ if "user_prompt_input" not in st.session_state:
     st.session_state["user_prompt_input"] = ""
 
 st.markdown("### Enter Your Profile & Career Aspiration")
-st.caption("Choose a sample profile or click skill chips below to autofill your query:")
 
-st.markdown('<div style="margin-top: 1rem;"></div>', unsafe_allow_html=True)
+# Form Text Area (Main User Input)
+user_input = st.text_area(
+    label="Describe your current technical skills, tools, languages, and target IT career role:",
+    height=170,
+    placeholder="e.g., I'm an IT undergraduate. I know Python, C#, MySQL, and Git. I want to become a Backend Developer.",
+    key="user_prompt_input"
+)
 
-# Sample Profile Preset Cards
-col_p1, col_p2, col_p3 = st.columns(3)
+st.markdown('<div style="margin-top: 0.85rem;"></div>', unsafe_allow_html=True)
 
-with col_p1:
-    st.markdown("""
-    <div class="preset-card-container">
-        <div class="preset-card-title">
-            <span>DevOps Cloud</span>
-            <span class="preset-card-tag preset-tag-hot">High Demand</span>
-        </div>
-        <div class="preset-card-desc">Python, Java, SQL, Docker & Git student seeking DevOps Cloud Engineer path.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    if st.button("Autofill DevOps Profile", key="btn_preset_1", use_container_width=True):
-        st.session_state["user_prompt_input"] = (
-            "I am a 3rd year IT student with experience in Python, Java, SQL, basic Docker containerization, and Git version control. "
-            "I enjoy setting up servers, writing deployment scripts, ensuring system uptime, and configuring automated build pipelines. "
-            "I prefer system reliability and automation over frontend UI design. Please evaluate my background and preferences, "
-            "recommend the best-fit career roles for me, identify my missing technical competencies, and generate a step-by-step learning roadmap."
-        )
-        st.rerun()
+submit_col1, submit_col2 = st.columns([1.5, 3.5])
+with submit_col1:
+    submit_btn = st.button("Generate Career Advice & Roadmap", type="primary", use_container_width=True)
 
-with col_p2:
-    st.markdown("""
-    <div class="preset-card-container">
-        <div class="preset-card-title">
-            <span>AI & ML Engineer</span>
-            <span class="preset-card-tag preset-tag-ai">AI & Big Data</span>
-        </div>
-        <div class="preset-card-desc">Python, Pandas, SQL & Statistics background transitioning into Machine Learning.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    if st.button("Autofill ML Profile", key="btn_preset_2", use_container_width=True):
-        st.session_state["user_prompt_input"] = (
-            "I have a solid foundation in Python, Pandas, SQL database querying, and basic statistics. "
-            "I am passionate about discovering patterns in complex datasets, building predictive machine learning models, "
-            "and working with intelligent agentic frameworks. I want to transition into an advanced AI & ML role within the next 6 to 9 months. "
-            "Please analyze my current profile, highlight missing core skills (such as PyTorch, MLOps, and vector databases), "
-            "and build a month-by-month career progression roadmap."
-        )
-        st.rerun()
-
-with col_p3:
-    st.markdown("""
-    <div class="preset-card-container">
-        <div class="preset-card-title">
-            <span>Full-Stack Architect</span>
-            <span class="preset-card-tag preset-tag-core">Core Tech</span>
-        </div>
-        <div class="preset-card-desc">React, Node.js, MongoDB & CSS dev aiming for Full-Stack Software Engineer.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    if st.button("Autofill Full-Stack Profile", key="btn_preset_3", use_container_width=True):
-        st.session_state["user_prompt_input"] = (
-            "I am proficient in React, JavaScript, HTML5, CSS3, Node.js, and MongoDB. "
-            "I enjoy building end-to-end web applications, designing responsive interfaces, creating RESTful backend APIs, "
-            "and scaling database schema designs. I aim to elevate my career towards a Senior Full-Stack Software Architect role. "
-            "Please conduct a comprehensive skills gap analysis on my profile, recommend missing industry-standard credentials/certifications, "
-            "and create a strategic career development path."
-        )
-        st.rerun()
-
-# Generous Spacing between Profile Cards and Quick-Add Section
-st.markdown('<div style="margin-top: 2.25rem; margin-bottom: 0.85rem;"></div>', unsafe_allow_html=True)
+# Spacing
+st.markdown('<div style="margin-top: 1.85rem; margin-bottom: 0.85rem;"></div>', unsafe_allow_html=True)
 
 # Quick-Add Skill Pills Bar
 st.markdown("""
@@ -1811,22 +1918,135 @@ for idx, skill in enumerate(quick_skills):
                     st.session_state["user_prompt_input"] = f"I know {skill}."
                 st.rerun()
 
-# Generous Spacing between Quick-Add Skills and Text Area
-st.markdown('<div style="margin-top: 1.85rem;"></div>', unsafe_allow_html=True)
+st.markdown('<div style="margin-top: 2rem; margin-bottom: 0.85rem;"></div>', unsafe_allow_html=True)
 
-# Form Text Area
-user_input = st.text_area(
-    label="Describe your current technical skills, tools, languages, and target IT career role:",
-    height=180,
-    placeholder="e.g., I'm an IT undergraduate. I know Python, C#, MySQL, and Git. I want to become a Backend Developer.",
-    key="user_prompt_input"
-)
+# Sample Profile Preset Cards (6 Popular IT Career Tracks)
+st.markdown("""
+<div style="font-size: 1.05rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.85rem;">
+    Or Choose a Sample Profile Track to Autofill:
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown('<div style="margin-top: 0.85rem;"></div>', unsafe_allow_html=True)
+col_r1_1, col_r1_2, col_r1_3 = st.columns(3)
 
-submit_col1, submit_col2 = st.columns([1.5, 3.5])
-with submit_col1:
-    submit_btn = st.button("Generate Career Advice & Roadmap", type="primary", use_container_width=True)
+with col_r1_1:
+    st.markdown("""
+    <div class="preset-card-container">
+        <div class="preset-card-title">
+            <span>QA & Test Automation</span>
+            <span class="preset-card-tag preset-tag-qa">Testing & QA</span>
+        </div>
+        <div class="preset-card-desc">Manual testing, test cases, Postman, Python/Java & Selenium aiming for Automation QA Engineer.</div>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("Autofill QA Profile", key="btn_preset_qa", use_container_width=True):
+        st.session_state["user_prompt_input"] = (
+            "I have experience in manual software testing, writing test cases, Python, Java, Postman API testing, and basic Selenium. "
+            "I want to transition into an Automation QA / Software Test Engineer role. "
+            "Please analyze my current background, identify missing automation & performance testing skills, "
+            "and create a step-by-step career progression roadmap."
+        )
+        st.rerun()
+
+with col_r1_2:
+    st.markdown("""
+    <div class="preset-card-container">
+        <div class="preset-card-title">
+            <span>Business Analyst (BA)</span>
+            <span class="preset-card-tag preset-tag-ba">Product & Agile</span>
+        </div>
+        <div class="preset-card-desc">Requirements gathering, user stories, Jira/Agile, SQL & UML diagrams aiming for BA role.</div>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("Autofill BA Profile", key="btn_preset_ba", use_container_width=True):
+        st.session_state["user_prompt_input"] = (
+            "I have an IT background with skills in SQL database querying, UML diagramming, requirements gathering, writing user stories, "
+            "and working with Jira in Agile/Scrum teams. I aim to become a professional Business Analyst (BA) or Systems Analyst. "
+            "Please evaluate my profile, highlight missing business analysis competencies, and generate a learning roadmap."
+        )
+        st.rerun()
+
+with col_r1_3:
+    st.markdown("""
+    <div class="preset-card-container">
+        <div class="preset-card-title">
+            <span>AI & ML Engineer</span>
+            <span class="preset-card-tag preset-tag-ai">AI & Big Data</span>
+        </div>
+        <div class="preset-card-desc">Python, Pandas, SQL & Statistics background transitioning into Machine Learning.</div>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("Autofill ML Profile", key="btn_preset_ml", use_container_width=True):
+        st.session_state["user_prompt_input"] = (
+            "I have a solid foundation in Python, Pandas, SQL database querying, and basic statistics. "
+            "I am passionate about discovering patterns in complex datasets, building predictive machine learning models, "
+            "and working with intelligent agentic frameworks. I want to transition into an advanced AI & ML role within the next 6 to 9 months. "
+            "Please analyze my current profile, highlight missing core skills (such as PyTorch, MLOps, and vector databases), "
+            "and build a month-by-month career progression roadmap."
+        )
+        st.rerun()
+
+st.markdown('<div style="margin-top: 0.75rem;"></div>', unsafe_allow_html=True)
+
+col_r2_1, col_r2_2, col_r2_3 = st.columns(3)
+
+with col_r2_1:
+    st.markdown("""
+    <div class="preset-card-container">
+        <div class="preset-card-title">
+            <span>DevOps Cloud</span>
+            <span class="preset-card-tag preset-tag-hot">High Demand</span>
+        </div>
+        <div class="preset-card-desc">Python, Java, SQL, Docker & Git student seeking DevOps Cloud Engineer path.</div>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("Autofill DevOps Profile", key="btn_preset_devops", use_container_width=True):
+        st.session_state["user_prompt_input"] = (
+            "I am a 3rd year IT student with experience in Python, Java, SQL, basic Docker containerization, and Git version control. "
+            "I enjoy setting up servers, writing deployment scripts, ensuring system uptime, and configuring automated build pipelines. "
+            "I prefer system reliability and automation over frontend UI design. Please evaluate my background and preferences, "
+            "recommend the best-fit career roles for me, identify my missing technical competencies, and generate a step-by-step learning roadmap."
+        )
+        st.rerun()
+
+with col_r2_2:
+    st.markdown("""
+    <div class="preset-card-container">
+        <div class="preset-card-title">
+            <span>Sys Admin & Infra</span>
+            <span class="preset-card-tag preset-tag-sys">IT & Network</span>
+        </div>
+        <div class="preset-card-desc">Linux, Windows Server, Networking (TCP/IP, DNS) & Bash/PowerShell aiming for SysAdmin.</div>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("Autofill SysAdmin Profile", key="btn_preset_sysadmin", use_container_width=True):
+        st.session_state["user_prompt_input"] = (
+            "I have hands-on experience in Linux & Windows server administration, bash and PowerShell scripting, "
+            "networking fundamentals (TCP/IP, DNS, VPNs, Firewalls), and system troubleshooting. "
+            "I want to become a Senior Systems Administrator or Cloud Infrastructure Engineer. "
+            "Please analyze my current skills, highlight missing infrastructure & cloud certifications, and provide a career roadmap."
+        )
+        st.rerun()
+
+with col_r2_3:
+    st.markdown("""
+    <div class="preset-card-container">
+        <div class="preset-card-title">
+            <span>Full-Stack Architect</span>
+            <span class="preset-card-tag preset-tag-core">Core Web</span>
+        </div>
+        <div class="preset-card-desc">React, Node.js, MongoDB & CSS dev aiming for Full-Stack Software Engineer.</div>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("Autofill Full-Stack Profile", key="btn_preset_fullstack", use_container_width=True):
+        st.session_state["user_prompt_input"] = (
+            "I am proficient in React, JavaScript, HTML5, CSS3, Node.js, and MongoDB. "
+            "I enjoy building end-to-end web applications, designing responsive interfaces, creating RESTful backend APIs, "
+            "and scaling database schema designs. I aim to elevate my career towards a Senior Full-Stack Software Architect role. "
+            "Please conduct a comprehensive skills gap analysis on my profile, recommend missing industry-standard credentials/certifications, "
+            "and create a strategic career development path."
+        )
+        st.rerun()
 
 
 # ------------------------------------------------------------------------------
@@ -2104,7 +2324,10 @@ if "career_advice_result" in st.session_state:
                         f'<div class="photo-month-card {card_completed_class}">'
                         f'<span class="photo-card-pill {pill_completed_class}">{badge_label}</span>'
                         f'<div class="photo-card-header-flex">'
-                        f'<div class="photo-card-white-square">{meta["icon"]}</div>'
+                        f'<div class="photo-card-3d-square">'
+                        f'<img src="{meta.get("icon_3d_url", "")}" class="photo-card-3d-icon-img" alt="{meta["main_title"]}" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'inline-block\';" />'
+                        f'<span style="display:none; font-size: 1.8rem; filter: drop-shadow(0 4px 10px rgba(0,242,254,0.6));">{meta["icon"]}</span>'
+                        f'</div>'
                         f'<div class="photo-card-titles-wrap">'
                         f'<h3 class="photo-card-main-title">{meta["main_title"]}</h3>'
                         f'<div class="photo-card-subtitle-cyan">{meta["subtitle"]}</div>'
@@ -2458,3 +2681,101 @@ if "career_advice_result" in st.session_state:
                     st.markdown(normalized_content)
         else:
             st.info("No direct RAG knowledge base insights were retrieved for this query.")
+
+
+# ------------------------------------------------------------------------------
+# 5. Top Sri Lankan Tech Employers & Live Career Portals Showcase (Bottom Bar)
+# ------------------------------------------------------------------------------
+st.markdown('<div style="margin-top: 3rem;"></div>', unsafe_allow_html=True)
+st.markdown("### Top Sri Lankan Tech Employers & Career Portals")
+st.caption("Click any leading tech company logo to explore live open positions & hiring portals:")
+
+st.markdown('<div style="margin-top: 1rem;"></div>', unsafe_allow_html=True)
+
+# Load local asset images as base64 Data URIs
+wso2_img = get_asset_base64("WSO2.jpg") or "https://wso2.com/files/wso2-dark-logo.svg"
+virtusa_img = get_asset_base64("Virtusa.png") or "https://www.virtusa.com/content/dam/virtusa/global/en/images/virtusa-logo.svg"
+lseg_img = get_asset_base64("LSEG.png") or "https://www.lseg.com/content/dam/lseg/global/en/images/logos/lseg-logo.svg"
+ifs_img = get_asset_base64("IFS.png") or "https://www.ifs.com/assets/images/ifs-logo.svg"
+
+col_c1, col_c2, col_c3, col_c4 = st.columns(4)
+
+with col_c1:
+    st.markdown(f"""
+    <a href="https://wso2.com/careers" target="_blank" class="company-card-glass">
+        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <span class="company-badge-tag" style="background: rgba(244, 63, 94, 0.18); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.4);">
+                Middleware & Cloud
+            </span>
+            <div style="height: 52px; display: flex; align-items: center; justify-content: center; margin: 0.3rem 0;">
+                <img src="{wso2_img}" class="company-logo-img" alt="WSO2" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span style="display:none; font-size: 1.35rem; font-weight: 800; color: #ffffff;">WSO2</span>
+            </div>
+            <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff; margin-bottom: 0.2rem;">WSO2</div>
+        </div>
+        <div class="company-link-btn">
+            <span>Explore Open Jobs</span>
+            <span style="font-size: 0.9rem;">↗</span>
+        </div>
+    </a>
+    """, unsafe_allow_html=True)
+
+with col_c2:
+    st.markdown(f"""
+    <a href="https://www.virtusa.com/careers" target="_blank" class="company-card-glass">
+        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <span class="company-badge-tag" style="background: rgba(6, 182, 212, 0.18); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.4);">
+                Digital Engineering & Cloud
+            </span>
+            <div style="height: 52px; display: flex; align-items: center; justify-content: center; margin: 0.3rem 0;">
+                <img src="{virtusa_img}" class="company-logo-img" alt="Virtusa" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span style="display:none; font-size: 1.35rem; font-weight: 800; color: #ffffff;">Virtusa</span>
+            </div>
+            <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff; margin-bottom: 0.2rem;">Virtusa</div>
+        </div>
+        <div class="company-link-btn">
+            <span>Explore Open Jobs</span>
+            <span style="font-size: 0.9rem;">↗</span>
+        </div>
+    </a>
+    """, unsafe_allow_html=True)
+
+with col_c3:
+    st.markdown(f"""
+    <a href="https://lseg.wd3.myworkdayjobs.com/Careers" target="_blank" class="company-card-glass">
+        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <span class="company-badge-tag" style="background: rgba(139, 92, 246, 0.18); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.4);">
+                FinTech & Trading
+            </span>
+            <div style="height: 52px; display: flex; align-items: center; justify-content: center; margin: 0.3rem 0;">
+                <img src="{lseg_img}" class="company-logo-img" alt="LSEG" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span style="display:none; font-size: 1.35rem; font-weight: 800; color: #ffffff;">LSEG</span>
+            </div>
+            <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff; margin-bottom: 0.2rem;">LSEG Sri Lanka</div>
+        </div>
+        <div class="company-link-btn">
+            <span>Explore Open Jobs</span>
+            <span style="font-size: 0.9rem;">↗</span>
+        </div>
+    </a>
+    """, unsafe_allow_html=True)
+
+with col_c4:
+    st.markdown(f"""
+    <a href="https://www.ifs.com/en/about/careers" target="_blank" class="company-card-glass">
+        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <span class="company-badge-tag" style="background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);">
+                Enterprise ERP & SaaS
+            </span>
+            <div style="height: 52px; display: flex; align-items: center; justify-content: center; margin: 0.3rem 0;">
+                <img src="{ifs_img}" class="company-logo-img" alt="IFS" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span style="display:none; font-size: 1.35rem; font-weight: 800; color: #ffffff;">IFS</span>
+            </div>
+            <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff; margin-bottom: 0.2rem;">IFS World</div>
+        </div>
+        <div class="company-link-btn">
+            <span>Explore Open Jobs</span>
+            <span style="font-size: 0.9rem;">↗</span>
+        </div>
+    </a>
+    """, unsafe_allow_html=True)
