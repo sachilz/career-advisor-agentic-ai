@@ -841,6 +841,24 @@ st.markdown("""
         animation: pulseGlow 2s infinite alternate;
     }
 
+    /* Autofill Profile Banner */
+    .autofill-info-banner {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.75rem 1.1rem;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%);
+        border: 1px solid rgba(52, 211, 153, 0.5);
+        border-radius: 14px;
+        color: #34d399;
+        font-size: 0.92rem;
+        font-weight: 700;
+        margin-top: 0.85rem;
+        margin-bottom: 0.75rem;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(52, 211, 153, 0.25);
+    }
+
     .btn-spinner {
         width: 18px;
         height: 18px;
@@ -1927,8 +1945,18 @@ if "user_prompt_input" not in st.session_state:
 def set_autofill_prompt(prompt_text: str) -> None:
     """Callback function to safely update session state before widget rendering."""
     st.session_state["user_prompt_input"] = prompt_text
+    st.session_state["show_autofill_notice"] = True
 
 st.markdown("### Enter Your Profile & Career Aspiration")
+
+if st.session_state.get("show_autofill_notice", False):
+    st.markdown("""
+    <div class="autofill-info-banner">
+        <span>✨ Profile Query Autofilled! Review prompt in the text box below & click <b>Generate Career Advice & Roadmap</b> ↑</span>
+    </div>
+    """, unsafe_allow_html=True)
+    st.toast("✨ Profile Autofilled! Review the prompt below and click 'Generate Career Advice & Roadmap'")
+    st.session_state["show_autofill_notice"] = False
 
 # Form Text Area (Main User Input)
 user_input = st.text_area(
@@ -2231,11 +2259,13 @@ if submit_btn:
             progress_placeholder.markdown(render_interactive_agent_progress(5), unsafe_allow_html=True)
             time.sleep(0.5)
             progress_placeholder.empty()
+            btn_loading_placeholder.empty()
             st.toast("Multi-Agent Career Analysis Completed Successfully!")
             
         except Exception as e:
             logger.error(f"Error executing run_career_advisor: {e}", exc_info=True)
             progress_placeholder.empty()
+            btn_loading_placeholder.empty()
             st.error(f"An error occurred while generating your advice: {e}")
 
 
