@@ -2039,6 +2039,104 @@ with col_r2_3:
 
 
 # ------------------------------------------------------------------------------
+# 3.5 Top Sri Lankan Tech Employers & Live Career Portals Showcase
+# ------------------------------------------------------------------------------
+st.markdown('<div style="margin-top: 3rem;"></div>', unsafe_allow_html=True)
+st.markdown("### Top Sri Lankan Tech Employers & Career Portals")
+st.caption("Click any leading tech company logo to explore live open positions & hiring portals:")
+
+st.markdown('<div style="margin-top: 1rem;"></div>', unsafe_allow_html=True)
+
+# Load local asset images as base64 Data URIs
+wso2_img = get_asset_base64("WSO2.jpg") or "https://wso2.com/files/wso2-dark-logo.svg"
+virtusa_img = get_asset_base64("Virtusa.png") or "https://www.virtusa.com/content/dam/virtusa/global/en/images/virtusa-logo.svg"
+lseg_img = get_asset_base64("LSEG.png") or "https://www.lseg.com/content/dam/lseg/global/en/images/logos/lseg-logo.svg"
+ifs_img = get_asset_base64("IFS.png") or "https://www.ifs.com/assets/images/ifs-logo.svg"
+
+col_c1, col_c2, col_c3, col_c4 = st.columns(4)
+
+with col_c1:
+    st.markdown(f"""
+    <a href="https://wso2.com/careers" target="_blank" class="company-card-glass">
+        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <span class="company-badge-tag" style="background: rgba(244, 63, 94, 0.18); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.4);">
+                Middleware & Cloud
+            </span>
+            <div style="height: 52px; display: flex; align-items: center; justify-content: center; margin: 0.3rem 0;">
+                <img src="{wso2_img}" class="company-logo-img" alt="WSO2" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span style="display:none; font-size: 1.35rem; font-weight: 800; color: #ffffff;">WSO2</span>
+            </div>
+            <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff; margin-bottom: 0.2rem;">WSO2</div>
+        </div>
+        <div class="company-link-btn">
+            <span>Explore Open Jobs</span>
+            <span style="font-size: 0.9rem;">↗</span>
+        </div>
+    </a>
+    """, unsafe_allow_html=True)
+
+with col_c2:
+    st.markdown(f"""
+    <a href="https://www.virtusa.com/careers" target="_blank" class="company-card-glass">
+        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <span class="company-badge-tag" style="background: rgba(6, 182, 212, 0.18); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.4);">
+                Digital Engineering & Cloud
+            </span>
+            <div style="height: 52px; display: flex; align-items: center; justify-content: center; margin: 0.3rem 0;">
+                <img src="{virtusa_img}" class="company-logo-img" alt="Virtusa" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span style="display:none; font-size: 1.35rem; font-weight: 800; color: #ffffff;">Virtusa</span>
+            </div>
+            <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff; margin-bottom: 0.2rem;">Virtusa</div>
+        </div>
+        <div class="company-link-btn">
+            <span>Explore Open Jobs</span>
+            <span style="font-size: 0.9rem;">↗</span>
+        </div>
+    </a>
+    """, unsafe_allow_html=True)
+
+with col_c3:
+    st.markdown(f"""
+    <a href="https://lseg.wd3.myworkdayjobs.com/Careers" target="_blank" class="company-card-glass">
+        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <span class="company-badge-tag" style="background: rgba(139, 92, 246, 0.18); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.4);">
+                FinTech & Trading
+            </span>
+            <div style="height: 52px; display: flex; align-items: center; justify-content: center; margin: 0.3rem 0;">
+                <img src="{lseg_img}" class="company-logo-img" alt="LSEG" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span style="display:none; font-size: 1.35rem; font-weight: 800; color: #ffffff;">LSEG</span>
+            </div>
+            <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff; margin-bottom: 0.2rem;">LSEG Sri Lanka</div>
+        </div>
+        <div class="company-link-btn">
+            <span>Explore Open Jobs</span>
+            <span style="font-size: 0.9rem;">↗</span>
+        </div>
+    </a>
+    """, unsafe_allow_html=True)
+
+with col_c4:
+    st.markdown(f"""
+    <a href="https://www.ifs.com/en/about/careers" target="_blank" class="company-card-glass">
+        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <span class="company-badge-tag" style="background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);">
+                Enterprise ERP & SaaS
+            </span>
+            <div style="height: 52px; display: flex; align-items: center; justify-content: center; margin: 0.3rem 0;">
+                <img src="{ifs_img}" class="company-logo-img" alt="IFS" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span style="display:none; font-size: 1.35rem; font-weight: 800; color: #ffffff;">IFS</span>
+            </div>
+            <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff; margin-bottom: 0.2rem;">IFS World</div>
+        </div>
+        <div class="company-link-btn">
+            <span>Explore Open Jobs</span>
+            <span style="font-size: 0.9rem;">↗</span>
+        </div>
+    </a>
+    """, unsafe_allow_html=True)
+
+
+# ------------------------------------------------------------------------------
 # 4. Multi-Agent Pipeline Execution & Animated Progress
 # ------------------------------------------------------------------------------
 if submit_btn:
@@ -2670,101 +2768,3 @@ if "career_advice_result" in st.session_state:
                     st.markdown(normalized_content)
         else:
             st.info("No direct RAG knowledge base insights were retrieved for this query.")
-
-
-# ------------------------------------------------------------------------------
-# 5. Top Sri Lankan Tech Employers & Live Career Portals Showcase (Bottom Bar)
-# ------------------------------------------------------------------------------
-st.markdown('<div style="margin-top: 3rem;"></div>', unsafe_allow_html=True)
-st.markdown("### Top Sri Lankan Tech Employers & Career Portals")
-st.caption("Click any leading tech company logo to explore live open positions & hiring portals:")
-
-st.markdown('<div style="margin-top: 1rem;"></div>', unsafe_allow_html=True)
-
-# Load local asset images as base64 Data URIs
-wso2_img = get_asset_base64("WSO2.jpg") or "https://wso2.com/files/wso2-dark-logo.svg"
-virtusa_img = get_asset_base64("Virtusa.png") or "https://www.virtusa.com/content/dam/virtusa/global/en/images/virtusa-logo.svg"
-lseg_img = get_asset_base64("LSEG.png") or "https://www.lseg.com/content/dam/lseg/global/en/images/logos/lseg-logo.svg"
-ifs_img = get_asset_base64("IFS.png") or "https://www.ifs.com/assets/images/ifs-logo.svg"
-
-col_c1, col_c2, col_c3, col_c4 = st.columns(4)
-
-with col_c1:
-    st.markdown(f"""
-    <a href="https://wso2.com/careers" target="_blank" class="company-card-glass">
-        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-            <span class="company-badge-tag" style="background: rgba(244, 63, 94, 0.18); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.4);">
-                Middleware & Cloud
-            </span>
-            <div style="height: 52px; display: flex; align-items: center; justify-content: center; margin: 0.3rem 0;">
-                <img src="{wso2_img}" class="company-logo-img" alt="WSO2" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
-                <span style="display:none; font-size: 1.35rem; font-weight: 800; color: #ffffff;">WSO2</span>
-            </div>
-            <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff; margin-bottom: 0.2rem;">WSO2</div>
-        </div>
-        <div class="company-link-btn">
-            <span>Explore Open Jobs</span>
-            <span style="font-size: 0.9rem;">↗</span>
-        </div>
-    </a>
-    """, unsafe_allow_html=True)
-
-with col_c2:
-    st.markdown(f"""
-    <a href="https://www.virtusa.com/careers" target="_blank" class="company-card-glass">
-        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-            <span class="company-badge-tag" style="background: rgba(6, 182, 212, 0.18); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.4);">
-                Digital Engineering & Cloud
-            </span>
-            <div style="height: 52px; display: flex; align-items: center; justify-content: center; margin: 0.3rem 0;">
-                <img src="{virtusa_img}" class="company-logo-img" alt="Virtusa" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
-                <span style="display:none; font-size: 1.35rem; font-weight: 800; color: #ffffff;">Virtusa</span>
-            </div>
-            <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff; margin-bottom: 0.2rem;">Virtusa</div>
-        </div>
-        <div class="company-link-btn">
-            <span>Explore Open Jobs</span>
-            <span style="font-size: 0.9rem;">↗</span>
-        </div>
-    </a>
-    """, unsafe_allow_html=True)
-
-with col_c3:
-    st.markdown(f"""
-    <a href="https://lseg.wd3.myworkdayjobs.com/Careers" target="_blank" class="company-card-glass">
-        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-            <span class="company-badge-tag" style="background: rgba(139, 92, 246, 0.18); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.4);">
-                FinTech & Trading
-            </span>
-            <div style="height: 52px; display: flex; align-items: center; justify-content: center; margin: 0.3rem 0;">
-                <img src="{lseg_img}" class="company-logo-img" alt="LSEG" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
-                <span style="display:none; font-size: 1.35rem; font-weight: 800; color: #ffffff;">LSEG</span>
-            </div>
-            <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff; margin-bottom: 0.2rem;">LSEG Sri Lanka</div>
-        </div>
-        <div class="company-link-btn">
-            <span>Explore Open Jobs</span>
-            <span style="font-size: 0.9rem;">↗</span>
-        </div>
-    </a>
-    """, unsafe_allow_html=True)
-
-with col_c4:
-    st.markdown(f"""
-    <a href="https://www.ifs.com/en/about/careers" target="_blank" class="company-card-glass">
-        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-            <span class="company-badge-tag" style="background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);">
-                Enterprise ERP & SaaS
-            </span>
-            <div style="height: 52px; display: flex; align-items: center; justify-content: center; margin: 0.3rem 0;">
-                <img src="{ifs_img}" class="company-logo-img" alt="IFS" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
-                <span style="display:none; font-size: 1.35rem; font-weight: 800; color: #ffffff;">IFS</span>
-            </div>
-            <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff; margin-bottom: 0.2rem;">IFS World</div>
-        </div>
-        <div class="company-link-btn">
-            <span>Explore Open Jobs</span>
-            <span style="font-size: 0.9rem;">↗</span>
-        </div>
-    </a>
-    """, unsafe_allow_html=True)
