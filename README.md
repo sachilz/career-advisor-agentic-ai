@@ -15,9 +15,9 @@ By orchestrating specialized AI agents using **LangGraph**, harnessing a domain-
 
 ---
 
-## 🌟 Overview & Core Mission
+## Overview & Core Mission
 
-### 💡 The Problem Statement
+### The Problem Statement
 Navigating the transition from university computer science programs or self-taught coding to landing a high-value software engineering role is fraught with challenges for IT students in Sri Lanka and emerging tech markets:
 - **Generic AI Hallucinations**: Standard LLM chatbots often produce vague, surface-level career advice that ignores exact tech stack prerequisites, realistic learning timelines, or credential validity.
 - **Regional Market Disconnect**: Global advice rarely accounts for local software export demands (e.g., Sri Lanka's expanding enterprise IT services, FinTech platforms, cloud migrations, and remote engineering opportunities).
@@ -25,13 +25,13 @@ Navigating the transition from university computer science programs or self-taug
 
 ---
 
-### 🏗 System Architecture & Workflow
+### System Architecture & Workflow
 
 ![Career Advisor AI Dashboard Architecture](assets/Architecture_Diagrame.gif)
 
 ---
 
-### 🎯 The Agentic AI Solution
+### The Agentic AI Solution
 **Career Advisor Agentic AI** overcomes these limitations by deploying an orchestrated multi-agent architecture (powered by **LangGraph**) paired with a persistent Retrieval-Augmented Generation (**ChromaDB RAG**) pipeline. Rather than relying on a single monolithic prompt, the system divides career advising into four specialized, state-driven agent nodes:
 
 1. **Stage 1: Intent & Entity Extraction (`Intent Analysis Agent`)**
@@ -52,7 +52,7 @@ Navigating the transition from university computer science programs or self-taug
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
 - **Multi-Agent Orchestration (LangGraph)**:
   - **Intent Analysis Agent**: Extracts student skills and target goals.
@@ -117,13 +117,13 @@ career-advisor-agentic-ai/
 
 ---
 
-## 🛠 Detailed Local Setup & Installation Guide
+## Detailed Local Setup & Installation Guide
 
 Follow these comprehensive step-by-step instructions to configure, initialize, and launch **Career Advisor Agentic AI** in your local development environment.
 
 ---
 
-### 📋 Prerequisites & System Requirements
+### Prerequisites & System Requirements
 
 Before beginning setup, ensure your local system meets the following prerequisites:
 - **Operating System**: Windows 10/11, macOS (Intel or Apple Silicon), or Ubuntu/Debian Linux.
@@ -316,32 +316,7 @@ If deploying without Docker Compose, use raw `docker` CLI commands:
 docker build -t career-advisor-agentic-ai:latest .
 ```
 
-#### 2. Run Container with Persistent Volume Mount
-Run container with environment variable injection and persistent host mounting for ChromaDB:
-
-- **Linux / macOS**:
-  ```bash
-  docker run -d \
-    --name career_advisor_ai \
-    -p 8501:8501 \
-    --env-file .env \
-    -v "$(pwd)/rag/chroma_db:/app/rag/chroma_db" \
-    career-advisor-agentic-ai:latest
-  ```
-
-- **Windows (PowerShell)**:
-  ```powershell
-  docker run -d `
-    --name career_advisor_ai `
-    -p 8501:8501 `
-    --env-file .env `
-    -v "${PWD}/rag/chroma_db:/app/rag/chroma_db" `
-    career-advisor-agentic-ai:latest
-  ```
-
----
-
-### 🔍 Container Health Check & Diagnostics
+### Container Health Check & Diagnostics
 
 Check container status and verify health checks:
 
@@ -358,7 +333,7 @@ docker exec -it career_advisor_ai /bin/bash
 
 ---
 
-## ⚙️ Hybrid Model Routing & LLM Orchestration Architecture
+## Hybrid Model Routing & LLM Orchestration Architecture
 
 To optimize performance, latency, cost efficiency, and response quality across the multi-agent graph, **Career Advisor Agentic AI** employs a **Hybrid LLM Routing Architecture** implemented in [`models/model_router.py`](file:///c:/Users/sachintha/Desktop/New%20folder/career-advisor-agentic-ai/models/model_router.py).
 
@@ -366,7 +341,7 @@ Different agent tasks have radically different computational needs. High-frequen
 
 ---
 
-### 📊 Model Routing Matrix
+### Model Routing Matrix
 
 | Agent Node | Primary Provider | Active Model | Task Responsibilities | Trade-Off & Latency Rationale |
 | :--- | :--- | :--- | :--- | :--- |
@@ -389,13 +364,13 @@ Different agent tasks have radically different computational needs. High-frequen
 
 ---
 
-## 🧪 Detailed Testing & Verification Guide
+## Testing & Verification Guide
 
 **Career Advisor Agentic AI** includes two isolated test suites to verify end-to-end multi-agent graph execution, state key transitions, and vector retrieval semantic precision.
 
 ---
 
-### 🤖 Test Suite 1: LangGraph Multi-Agent Orchestration Test
+### Test Suite 1: LangGraph Multi-Agent Orchestration Test
 
 This test harness (`agents/test_graph.py`) executes an end-to-end run of the sequential StateGraph workflow without requiring the Streamlit web server.
 
@@ -431,7 +406,7 @@ END-TO-END TEST SUCCESSFUL! All 4 agents executed and populated state.
 
 ---
 
-### 📚 Test Suite 2: RAG Vector Search & Retrieval Evaluation
+### Test Suite 2: RAG Vector Search & Retrieval Evaluation
 
 This test harness (`rag/test_retrieval.py`) evaluates the semantic retrieval quality of ChromaDB over 5 standard benchmark career queries.
 
@@ -452,21 +427,7 @@ Prints the **Top-K ranked document chunks** (`k=3`), original document source fi
 
 ---
 
-### 📊 RAG Retrieval Benchmark Log
-
-Document chunk precision and similarity scores are logged in [`rag/retrieval_evaluation.md`](file:///c:/Users/sachintha/Desktop/New%20folder/career-advisor-agentic-ai/rag/retrieval_evaluation.md):
-
-| Benchmark Query | Top Retrieved Document | Similarity Score | Relevant? | Performance Notes |
-| :--- | :--- | :---: | :---: | :--- |
-| **DevOps Engineer Prerequisites** | `DevOps_Skill_Map.md` | `0.6405` | **Yes** | High precision; retrieves Linux, CI/CD, Docker/K8s, and IaC roadmaps. |
-| **Cloud Computing Certifications** | `AWS_Certifications_Guide.md` | `0.6531` | **Yes** | Accurately identifies AWS Cloud Practitioner & Azure AZ-900. |
-| **Data Scientist Requirements** | `Data_Scientist_JD.md` | `0.9073` | **Yes** | Excellent match for Python, SQL, and Scikit-Learn requirements. |
-| **Software Interview Prep** | `Software_Interview_Prep.md` | `0.5408` | **Yes** | Covers LeetCode DSA, System Design, and STAR behavioral method. |
-| **AWS vs. Azure Comparison** | `Azure_vs_AWS.md` | `0.2709` | **Yes** | Strong match; compares startup vs enterprise ecosystem fit. |
-
----
-
-## 📄 License & Terms
+## License & Terms
 
 This project is open-source software distributed under the **[MIT License](https://opensource.org/licenses/MIT)**.
 
