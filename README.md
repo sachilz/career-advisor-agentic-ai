@@ -117,7 +117,7 @@ career-advisor-agentic-ai/
 
 ---
 
-## Detailed Local Setup & Installation Guide
+## Local Setup & Installation Guide
 
 Follow these comprehensive step-by-step instructions to configure, initialize, and launch **Career Advisor Agentic AI** in your local development environment.
 
