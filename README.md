@@ -1,10 +1,5 @@
 # 🎓 Career Advisor Agentic AI
 
-[![Live Demo](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://career-advisor-agentic-ai.streamlit.app/)
-[![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![LangGraph](https://img.shields.io/badge/Orchestration-LangGraph-FF6F00?style=flat-square)](https://github.com/langchain-ai/langgraph)
-[![ChromaDB](https://img.shields.io/badge/RAG-ChromaDB-purple?style=flat-square)](https://www.trychroma.com/)
-
 **Career Advisor Agentic AI** is an intelligent, autonomous multi-agent platform designed to bridge the gap between academic education and industry readiness for IT students, graduates, and aspiring software professionals—with tailored strategic guidance for the **Sri Lankan tech ecosystem**. 
 
 By orchestrating specialized AI agents using **LangGraph**, harnessing a domain-specific **ChromaDB RAG Engine**, and dynamically routing prompts across high-speed and high-reasoning LLMs (**Groq** & **OpenRouter**), the platform converts raw student profile data into personalized career development roadmaps, interactive skill gap matrixes, industry credential recommendations, and local market strategic advice—all delivered through an interactive **Streamlit** web application.
