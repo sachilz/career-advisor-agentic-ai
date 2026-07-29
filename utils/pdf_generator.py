@@ -2,6 +2,7 @@ import io
 import re
 import datetime
 import html
+from typing import Optional, Dict, List, Any
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.platypus import (
@@ -15,15 +16,18 @@ class AcademicNumberedCanvas(canvas.Canvas):
     """
     Two-pass canvas to calculate total pages and render standard academic running headers and footers.
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self._saved_page_states = []
+        self._saved_page_states: List[Dict[str, Any]] = []
 
-    def showPage(self):
+    def showPage(self) -> None:
         self._saved_page_states.append(dict(self.__dict__))
-        self._startPage()
+        if hasattr(super(), "_startPage"):
+            getattr(super(), "_startPage")()
+        elif hasattr(self, "_startPage"):
+            getattr(self, "_startPage")()
 
-    def save(self):
+    def save(self) -> None:
         num_pages = len(self._saved_page_states)
         for state in self._saved_page_states:
             self.__dict__.update(state)
@@ -31,23 +35,24 @@ class AcademicNumberedCanvas(canvas.Canvas):
             super().showPage()
         super().save()
 
-    def draw_decorations(self, page_count):
+    def draw_decorations(self, page_count: int) -> None:
         self.saveState()
         self.setFont("Times-Roman", 9)
         self.setFillColor(colors.HexColor("#4A5568"))
 
         width, height = letter
         margin = 54  # 0.75 in margin
+        current_page = int(getattr(self, "_pageNumber", 1))
 
         # Running Top Header (Pages > 1)
-        if self._pageNumber > 1:
+        if current_page > 1:
             self.drawString(margin, height - 36, "CAREER ADVISORY REPORT | PROFESSIONAL TECHNICAL ASSESSMENT")
             self.setStrokeColor(colors.HexColor("#CBD5E0"))
             self.setLineWidth(0.5)
             self.line(margin, height - 42, width - margin, height - 42)
 
         # Running Footer (All pages)
-        page_str = f"Page {self._pageNumber} of {page_count}"
+        page_str = f"Page {current_page} of {page_count}"
         self.drawRightString(width - margin, 36, page_str)
         self.drawString(margin, 36, "CONFIDENTIAL | PREPARED FOR PROFESSIONAL CAREER DEVELOPMENT")
         self.setStrokeColor(colors.HexColor("#CBD5E0"))
@@ -165,7 +170,13 @@ def parse_markdown_to_flowables(md_text: str, styles: dict) -> list:
     return flowables
 
 
-def generate_academic_pdf(target_role: str, parsed_sec: dict = None, raw_recommendation: str = "", extracted_skills: list = None, missing_skills: list = None) -> bytes:
+def generate_academic_pdf(
+    target_role: str,
+    parsed_sec: Optional[Dict[str, Any]] = None,
+    raw_recommendation: str = "",
+    extracted_skills: Optional[List[str]] = None,
+    missing_skills: Optional[List[str]] = None
+) -> bytes:
     """
     Generates a professional academic PDF report payload as bytes.
     """

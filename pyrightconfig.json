@@ -6,6 +6,8 @@
   "venv": "venv",
   "extraPaths": [
     ".",
-    "venv/Lib/site-packages"
-  ]
+    "venv/Lib/site-packages",
+    "C:/Users/sachintha/AppData/Local/Programs/Python/Python314/Lib/site-packages"
+  ],
+  "reportMissingImports": false
 }
