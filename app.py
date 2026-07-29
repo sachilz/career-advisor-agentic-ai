@@ -15,6 +15,7 @@ import streamlit as st
 from utils.secrets import get_secret
 from agents.graph import run_career_advisor
 from agents.state import CareerAdvisorState
+from utils.pdf_generator import generate_academic_pdf
 
 # Configure console logger for debugging runtime errors
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -2774,12 +2775,19 @@ if "career_advice_result" in st.session_state:
                 st.code(recommendation, language="markdown")
 
         st.markdown("<br>", unsafe_allow_html=True)
-        # Download Report Option
+        # Download Academic PDF Advice Report Option
+        pdf_data = generate_academic_pdf(
+            target_role=target_role,
+            parsed_sec=parsed_sec,
+            raw_recommendation=recommendation,
+            extracted_skills=extracted_skills,
+            missing_skills=missing_skills
+        )
         st.download_button(
-            label="📥 Download Advice Report (.md)",
-            data=f"# Career Advice Report for {target_role}\n\n" + recommendation,
-            file_name=f"career_advice_{target_role.lower().replace(' ', '_')}.md",
-            mime="text/markdown"
+            label="📄 Download Official Advice Report (.pdf)",
+            data=pdf_data,
+            file_name=f"career_advice_{target_role.lower().replace(' ', '_')}.pdf",
+            mime="application/pdf"
         )
 
     # --------------------------------------------------------------------------
