@@ -119,6 +119,11 @@ def _fallback_gap_analysis(skills: List[str], goal: str) -> List[str]:
         "qa": ["Manual Testing Fundamentals", "Test Automation (Selenium/Cypress)", "API Testing (Postman/RestAssured)", "CI/CD Integration Testing", "Performance Testing (JMeter)", "Test Planning & Bug Tracking"],
         "ui": ["Figma & Wireframing", "User Research & Usability Testing", "Design Systems & Prototyping", "Information Architecture", "HTML/CSS Basics"],
         "ux": ["Figma & Wireframing", "User Research & Usability Testing", "Design Systems & Prototyping", "Information Architecture", "HTML/CSS Basics"],
+        "sysadmin": ["Linux Administration (RHEL/Ubuntu)", "Windows Server & Active Directory", "Networking (TCP/IP, DNS, DHCP, VPN)", "Cloud Platforms (AWS/Azure/GCP)", "Configuration Management (Ansible/Puppet)", "Monitoring & Logging (Nagios/Zabbix/Prometheus)"],
+        "systems admin": ["Linux Administration (RHEL/Ubuntu)", "Windows Server & Active Directory", "Networking (TCP/IP, DNS, DHCP, VPN)", "Cloud Platforms (AWS/Azure/GCP)", "Configuration Management (Ansible/Puppet)", "Monitoring & Logging (Nagios/Zabbix/Prometheus)"],
+        "system admin": ["Linux Administration (RHEL/Ubuntu)", "Windows Server & Active Directory", "Networking (TCP/IP, DNS, DHCP, VPN)", "Cloud Platforms (AWS/Azure/GCP)", "Configuration Management (Ansible/Puppet)", "Monitoring & Logging (Nagios/Zabbix/Prometheus)"],
+        "infrastructure": ["Linux Server Administration", "Cloud Platforms (AWS/Azure/GCP)", "Infrastructure as Code (Terraform/Ansible)", "Networking & Security Fundamentals", "Containerization (Docker/K8s)", "Monitoring & Incident Response"],
+        "business analyst": ["Requirements Gathering & Documentation", "UML Diagramming & Process Modeling", "Agile/Scrum Methodology", "SQL & Data Querying", "Stakeholder Communication & Workshops", "JIRA & Project Management Tools"],
         "software engineer": ["Data Structures & Algorithms", "System Design", "Version Control (Git)", "Testing & Debugging", "API Design & Integration", "Cloud Deployment Basics"],
     }
     

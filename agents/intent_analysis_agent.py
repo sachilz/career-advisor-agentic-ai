@@ -47,15 +47,25 @@ def intent_analysis_agent(state: CareerAdvisorState) -> CareerAdvisorState:
         "You are an expert IT career intake assistant for Sri Lankan IT students. "
         "Analyze the student's text and extract:\n"
         "1. 'skills': A JSON list of technical skills, languages, or tools the student currently knows.\n"
-        "2. 'goal': The desired target IT career role implied or mentioned by the student.\n"
-        "Determine the EXACT real IT role accurately from context clues:\n"
-        "- Predictive systems, predictive modeling, discovering patterns, datasets, machine learning, PyTorch, TensorFlow, Pandas -> 'AI/ML Engineer'.\n"
-        "- Data pipelines, ETL, data engineering, big data, Spark, Kafka -> 'Data Engineer'.\n"
-        "- Docker, Kubernetes, Terraform, Jenkins, CI/CD, infrastructure automation -> 'DevOps Engineer'.\n"
-        "- SQL, database management, relational databases, data querying, analytics -> 'Data Analyst' or 'Database Administrator'.\n"
-        "- React, HTML, CSS, JavaScript, frontend -> 'Frontend Developer'.\n"
-        "- Node.js, Express, Spring Boot, REST API, microservices (without data analytics/predictive focus) -> 'Backend Developer'.\n"
-        "- Wireshark, penetration testing, networking, ethical hacking -> 'Cybersecurity Analyst'.\n"
+        "2. 'goal': The desired target IT career role implied or mentioned by the student.\n\n"
+        "CRITICAL RULE: If the student EXPLICITLY states their target role (e.g. 'I want to become a Systems Administrator'), "
+        "use THAT exact role as the 'goal'. Do NOT override it with a different role.\n\n"
+        "When the student does NOT explicitly state a role, determine the EXACT role from context clues:\n"
+        "- Machine learning, deep learning, PyTorch, TensorFlow, Pandas, predictive modeling, NLP, computer vision -> 'AI/ML Engineer'.\n"
+        "- Data pipelines, ETL, data engineering, big data, Spark, Kafka, Airflow, data warehousing -> 'Data Engineer'.\n"
+        "- Data analytics, Power BI, Tableau, Excel, SQL queries, business intelligence -> 'Data Analyst'.\n"
+        "- Docker, Kubernetes, Terraform, Jenkins, CI/CD, infrastructure automation, deployment scripts -> 'DevOps Engineer'.\n"
+        "- React, HTML, CSS, JavaScript, frontend, responsive design, UI components -> 'Frontend Developer'.\n"
+        "- Node.js, Express, Spring Boot, Django, REST API, microservices, backend -> 'Backend Developer'.\n"
+        "- React + Node.js (or similar frontend+backend combo), full-stack, end-to-end web apps -> 'Full-Stack Developer'.\n"
+        "- Linux, Windows Server, server administration, bash, PowerShell, DNS, TCP/IP, system troubleshooting -> 'Systems Administrator'.\n"
+        "- Cloud infrastructure, infrastructure engineer, IaC, AWS/Azure/GCP architecture -> 'Cloud Engineer'.\n"
+        "- Wireshark, penetration testing, ethical hacking, SIEM, network security -> 'Cybersecurity Analyst'.\n"
+        "- Flutter, React Native, Swift, Kotlin, mobile app development -> 'Mobile App Developer'.\n"
+        "- Manual testing, test automation, Selenium, Cypress, QA, quality assurance -> 'QA Engineer'.\n"
+        "- Figma, wireframing, UI/UX design, usability testing, prototyping -> 'UI/UX Designer'.\n"
+        "- Database administration, DBA, PL/SQL, database tuning, indexing -> 'Database Administrator'.\n"
+        "- Requirements gathering, user stories, Jira, Agile/Scrum, UML, stakeholder analysis -> 'Business Analyst'.\n"
         "Do NOT default to Full-Stack Developer or Software Engineer when specific domain keywords exist.\n\n"
         "Return ONLY a valid JSON object in this exact format, with no Markdown wrapping or conversational text:\n"
         '{"skills": ["Python", "Pandas", "SQL"], "goal": "AI/ML Engineer"}'
@@ -87,20 +97,27 @@ def intent_analysis_agent(state: CareerAdvisorState) -> CareerAdvisorState:
         print(f"[Agent 1: Intent Analysis] Warning parsing LLM response: {e}. Applying fallback extraction.")
         extracted_skills, extracted_goal = _heuristic_extraction(user_input)
 
-    # Post-validation: Enforce domain matrix role if LLM output is generic or misclassified without explicit mention
-    matrix_role = _classify_role_by_domain_matrix(user_input)
-    if matrix_role:
-        # Check if user explicitly wrote a target role title in text
-        explicit_mention = re.search(
-            r"(?:goal is to become|become a|become an|aspiring|seeking|target role|target is|work as a|transition into an|transition into a|aiming for|path for)\s+([a-zA-Z0-9\s\/\-\+]+)",
-            user_input, re.IGNORECASE
-        )
-        if explicit_mention:
-            pass
-        elif extracted_goal in ["Software Engineer", "Full-Stack Developer", "Target IT Role"]:
-            extracted_goal = matrix_role
-        elif not extracted_goal:
-            extracted_goal = matrix_role
+    # Post-validation: Honor user's explicit role statement, then fall back to domain matrix
+    explicit_mention = re.search(
+        r"(?:goal is to become|become a|become an|aspiring|seeking|target role|target is|work as a|work as an"
+        r"|transition into an|transition into a|aiming for|path for|interested in becoming"
+        r"|i want to be a|i want to be an|i want to become a|i want to become an"
+        r"|career goal is|dream job is|aim to become)\s+([a-zA-Z0-9\s\/\-\+\&]+)",
+        user_input, re.IGNORECASE
+    )
+    if explicit_mention:
+        # User explicitly stated their target role — always honor it
+        explicit_role = explicit_mention.group(1).strip().rstrip(".,;")
+        # Clean trailing filler words
+        explicit_role = re.sub(r'\s+(?:role|position|in sri lanka|please|and)\s*$', '', explicit_role, flags=re.IGNORECASE).strip()
+        if len(explicit_role) > 2 and len(explicit_role) < 50 and explicit_role.lower() not in ["a", "an", "the", "my"]:
+            extracted_goal = explicit_role.title()
+    else:
+        # No explicit role stated — use domain matrix to correct generic/misclassified LLM output
+        matrix_role = _classify_role_by_domain_matrix(user_input)
+        if matrix_role:
+            if extracted_goal in ["Software Engineer", "Full-Stack Developer", "Target IT Role"] or not extracted_goal:
+                extracted_goal = matrix_role
 
     print(f"  [+] Extracted Skills: {extracted_skills}")
     print(f"  [+] Extracted Goal:   {extracted_goal}")
@@ -122,49 +139,76 @@ def _classify_role_by_domain_matrix(text: str) -> Optional[str]:
             "devops", "docker", "kubernetes", "k8s", "terraform", "jenkins", "github actions",
             "ci/cd", "infrastructure automation", "containerized", "system reliability", "sre",
             "deployment efficiency", "automate deployments", "ansible", "cloud platforms",
-            "provision infrastructure", "prometheus", "grafana"
+            "provision infrastructure", "prometheus", "grafana", "deployment scripts",
+            "automated build pipelines", "build pipelines"
         ],
         "AI/ML Engineer": [
             "ai/ml", "machine learning", "deep learning", "pytorch", "tensorflow", "scikit-learn",
             "mlops", "neural networks", "nlp", "computer vision", "llm", "pandas", "numpy",
             "predictive", "predictive systems", "discovering patterns", "patterns in complex datasets",
-            "predictive modeling", "dataset", "datasets"
+            "predictive modeling", "dataset", "datasets", "agentic frameworks",
+            "data science", "data scientist"
         ],
         "Data Analyst": [
             "data analyst", "data analytics", "analyze data", "power bi", "tableau", "excel",
-            "sql queries", "relational databases", "data manipulation", "business intelligence"
+            "sql queries", "relational databases", "data manipulation", "business intelligence",
+            "data visualization", "reporting"
         ],
         "Data Engineer": [
             "data engineer", "data pipeline", "data pipelines", "apache spark", "spark", "kafka", "etl",
             "data warehousing", "snowflake", "bigquery", "airflow", "dbt"
         ],
         "Frontend Developer": [
-            "frontend", "front-end", "react", "angular", "vue", "html", "css", "javascript",
-            "typescript", "next.js", "tailwind", "responsive design", "ui component"
+            "frontend", "front-end", "responsive design", "ui component",
+            "responsive interfaces", "web interfaces"
         ],
         "Backend Developer": [
-            "backend", "back-end", "node.js", "express", "spring boot", "django", "flask",
-            "fastapi", "rest api", "graphql", "microservices", "authentication"
+            "backend", "back-end", "rest api", "graphql", "microservices",
+            "backend apis", "server-side"
+        ],
+        "Full-Stack Developer": [
+            "full-stack", "full stack", "fullstack", "end-to-end web",
+            "frontend and backend", "front-end and back-end"
+        ],
+        "Systems Administrator": [
+            "system administrator", "systems administrator", "sysadmin", "sys admin",
+            "server administration", "windows server", "linux server", "active directory",
+            "system troubleshooting", "powershell scripting", "bash scripting",
+            "infrastructure engineer", "cloud infrastructure", "server management",
+            "tcp/ip", "dns", "vpn", "dhcp", "ldap", "patch management",
+            "system monitoring", "nagios", "zabbix", "system uptime"
         ],
         "Cybersecurity Analyst": [
-            "cybersecurity", "cyber", "penetration testing", "ethical hacking", "wireshark",
-            "siem", "metasploit", "burp suite", "network security", "firewall", "incident response"
+            "cybersecurity", "cyber security", "penetration testing", "ethical hacking", "wireshark",
+            "siem", "metasploit", "burp suite", "network security", "firewall rules",
+            "firewall configuration", "incident response", "vulnerability assessment",
+            "security analyst", "information security", "infosec"
         ],
         "Mobile App Developer": [
-            "mobile app", "flutter", "react native", "swift", "kotlin", "android", "ios developer"
+            "mobile app", "flutter", "react native", "swift", "kotlin", "android", "ios developer",
+            "mobile development", "app development"
         ],
         "QA Engineer": [
             "qa engineer", "quality assurance", "test automation", "selenium", "cypress",
-            "postman", "jmeter", "manual testing"
+            "postman", "jmeter", "manual testing", "test cases", "software testing",
+            "automation qa", "test engineer", "software test"
         ],
         "UI/UX Designer": [
-            "ui/ux", "ux design", "ui design", "figma", "wireframing", "usability testing", "prototyping"
+            "ui/ux", "ux design", "ui design", "figma", "wireframing", "usability testing",
+            "prototyping", "user experience", "user interface design"
+        ],
+        "Business Analyst": [
+            "business analyst", "business analysis", "requirements gathering", "user stories",
+            "stakeholder", "uml diagram", "systems analyst", "agile/scrum",
+            "process mapping", "gap analysis", "functional requirements"
         ],
         "Database Administrator": [
-            "database admin", "dba", "database administrator", "pl/sql", "database tuning", "indexing"
+            "database admin", "dba", "database administrator", "pl/sql", "database tuning",
+            "indexing", "database management", "database schema"
         ],
         "Cloud Engineer": [
-            "cloud engineer", "aws certified", "azure engineer", "cloud architecture", "gcp"
+            "cloud engineer", "aws certified", "azure engineer", "cloud architecture", "gcp",
+            "cloud computing", "cloud services", "cloud migration"
         ]
     }
 
@@ -351,16 +395,22 @@ def _heuristic_extraction(text: str):
             if disp not in found_skills:
                 found_skills.append(disp)
 
-    # 1. Try explicit role extraction using intent regex
+    # 1. Try explicit role extraction using expanded intent regex
     extracted_role = None
     role_intent_match = re.search(
-        r"(?:goal is to become|become a|become an|aspiring|seeking|target role|target is|work as a|transition into an|transition into a|aiming for|path for)\s+([a-zA-Z0-9\s\/\-\+]+?)(?:\.|\,|\;|$|\n|in Sri Lanka)",
+        r"(?:goal is to become|become a|become an|aspiring|seeking|target role|target is"
+        r"|work as a|work as an|transition into an|transition into a|aiming for|path for"
+        r"|interested in becoming|i want to be a|i want to be an"
+        r"|i want to become a|i want to become an|career goal is|dream job is"
+        r"|aim to become|elevate my career towards a|elevate my career towards an)"
+        r"\s+([a-zA-Z0-9\s\/\-\+\&]+?)(?:\.|\,|\;|$|\n|in Sri Lanka|role|position|Please)",
         text, re.IGNORECASE
     )
     if role_intent_match:
         cand = role_intent_match.group(1).strip()
-        # Clean candidates
-        if len(cand) > 2 and len(cand) < 40 and cand.lower() not in ["a", "an", "the", "my"]:
+        # Clean trailing filler words
+        cand = re.sub(r'\s+(?:role|position|in sri lanka|please|and)\s*$', '', cand, flags=re.IGNORECASE).strip()
+        if len(cand) > 2 and len(cand) < 50 and cand.lower() not in ["a", "an", "the", "my"]:
             extracted_role = cand.title()
 
     # 2. Use Domain Matrix Classification
