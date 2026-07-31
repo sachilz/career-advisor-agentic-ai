@@ -545,7 +545,7 @@ def render_interactive_agent_progress(current_phase: int) -> str:
 # 1. Page Configuration & Modern Glassmorphic Custom CSS Design System
 # ------------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Career Advisor AI | Sri Lanka IT Edition",
+    page_title="Talent Navigator | Sri Lanka IT Edition",
     page_icon="🎓",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -1922,9 +1922,9 @@ st.markdown("""
     <div class="hero-badge-top">
         <span>Agentic AI Platform</span>
     </div>
-    <div class="hero-title-text">🎓 Career Advisor AI</div>
+    <div class="hero-title-text">🎓 Talent Navigator</div>
     <div class="hero-subtitle-text">
-        An agentic AI advisor designed specifically for Sri Lankan IT undergraduates & fresh graduates. 
+        An agentic AI talent navigator designed specifically for Sri Lankan IT undergraduates & fresh graduates. 
         Analyze your technical background, identify skill gaps against market standards, and receive RAG-grounded learning roadmaps.
     </div>
     <div class="hero-chips-grid">
