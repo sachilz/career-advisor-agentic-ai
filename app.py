@@ -1910,6 +1910,157 @@ st.markdown("""
             margin-bottom: 0.6rem;
         }
     }
+
+    /* -------------------------------------------------------------------------
+       Separate Detailed Report Section Styling
+       ------------------------------------------------------------------------- */
+    .report-divider-container {
+        margin-top: 3.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .report-divider-line {
+        border: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent 0%, rgba(99, 102, 241, 0.7) 50%, transparent 100%);
+        margin: 0;
+    }
+
+    .report-divider-badge {
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #0b0f19;
+        padding: 0.25rem 1.4rem;
+        border-radius: 20px;
+        border: 1px solid rgba(99, 102, 241, 0.5);
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: #a5b4fc;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+    }
+
+    .report-placeholder-banner {
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.7) 100%);
+        border: 2px dashed rgba(99, 102, 241, 0.4);
+        border-radius: 24px;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        margin-bottom: 2.5rem;
+        backdrop-filter: blur(14px);
+        transition: all 0.3s ease;
+    }
+
+    .report-placeholder-banner:hover {
+        border-color: rgba(99, 102, 241, 0.7);
+        box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.25);
+    }
+
+    .report-placeholder-icon {
+        font-size: 2.8rem;
+        margin-bottom: 0.75rem;
+        display: inline-block;
+        filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.4));
+    }
+
+    .report-placeholder-title {
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+    }
+
+    .report-placeholder-desc {
+        font-size: 0.95rem;
+        color: #94a3b8;
+        max-width: 680px;
+        margin: 0 auto 1.25rem auto;
+        line-height: 1.6;
+    }
+
+    .report-feature-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: rgba(99, 102, 241, 0.15);
+        color: #c084fc;
+        border: 1px solid rgba(139, 92, 246, 0.35);
+        padding: 0.38rem 0.9rem;
+        border-radius: 16px;
+        font-size: 0.82rem;
+        font-weight: 700;
+    }
+
+    .report-section-hero-wrapper {
+        background: linear-gradient(135deg, rgba(30, 27, 75, 0.75) 0%, rgba(15, 23, 42, 0.9) 100%);
+        border: 1px solid rgba(129, 140, 248, 0.45);
+        border-radius: 24px;
+        padding: 1.75rem 2rem;
+        margin-bottom: 1.75rem;
+        backdrop-filter: blur(16px);
+        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .report-status-pill-active {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        padding: 0.25rem 0.75rem;
+        border-radius: 14px;
+        font-size: 0.76rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .report-pulse-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #34d399;
+        border-radius: 50%;
+        display: inline-block;
+        box-shadow: 0 0 8px #34d399;
+        animation: pulseDot 1.5s infinite;
+    }
+
+    @keyframes pulseDot {
+        0% { opacity: 0.4; transform: scale(0.8); }
+        50% { opacity: 1; transform: scale(1.2); }
+        100% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .report-status-pill-meta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: rgba(99, 102, 241, 0.15);
+        color: #a5b4fc;
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        padding: 0.25rem 0.75rem;
+        border-radius: 14px;
+        font-size: 0.76rem;
+        font-weight: 700;
+    }
+
+    .report-hero-role-chip {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        padding: 0.55rem 1.1rem;
+        border-radius: 16px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -2204,6 +2355,41 @@ with col_c4:
     </a>
     """, unsafe_allow_html=True)
 
+# ------------------------------------------------------------------------------
+# 3.6 Prominent Visual Section Divider for Detailed Report
+# ------------------------------------------------------------------------------
+st.markdown("""
+<div id="career-report-section" class="report-divider-container">
+    <hr class="report-divider-line">
+    <div class="report-divider-badge">
+        <span>📊</span>
+        <span>DETAILED CAREER REPORT SECTION</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Render Placeholder Banner if no report has been generated yet
+if "career_advice_result" not in st.session_state:
+    st.markdown("""
+    <div class="report-placeholder-banner">
+        <div class="report-placeholder-icon">📑</div>
+        <div class="report-placeholder-title">Personalized Career Intelligence Report Section</div>
+        <div class="report-placeholder-desc">
+            Your detailed multi-agent AI career analysis, personalized career ladder, skills gap matrix, industry certifications, and grounded RAG insights will be generated and displayed right here in this section.
+        </div>
+        <div style="display: flex; gap: 0.65rem; justify-content: center; flex-wrap: wrap; margin-top: 1.1rem;">
+            <span class="report-feature-badge">🗺️ Monthly Career Rungs</span>
+            <span class="report-feature-badge">🎯 Live Skill Readiness Score</span>
+            <span class="report-feature-badge">🏆 Industry Certifications Grid</span>
+            <span class="report-feature-badge">📚 Grounded RAG References</span>
+            <span class="report-feature-badge">📄 Exportable PDF Report</span>
+        </div>
+        <div style="margin-top: 1.4rem; font-size: 0.88rem; color: #34d399; font-weight: 700;">
+            👇 Enter your profile & goal above, then click <b>"Generate Career Advice & Roadmap"</b> to populate your report!
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
 
 # ------------------------------------------------------------------------------
 # 4. Multi-Agent Pipeline Execution & Animated Progress
@@ -2271,27 +2457,49 @@ if submit_btn:
 
 
 # ------------------------------------------------------------------------------
-# 5. Modern Structured Results Dashboard
+# 5. Modern Structured Results Dashboard (Detailed Report Section)
 # ------------------------------------------------------------------------------
 if "career_advice_result" in st.session_state:
     result: CareerAdvisorState = st.session_state["career_advice_result"]
     last_executed = st.session_state.get("last_executed_input", "")
     current_input_text = user_input.strip() if 'user_input' in locals() and user_input else ""
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    if current_input_text and last_executed and current_input_text != last_executed:
-        st.warning("⚠️ **New Input Text Detected!** The report below is from your previous run. Click the blue **`Generate Career Advice & Roadmap`** button above to generate the new report for your SQL profile!")
-
-    st.markdown("## Your Personalized Career Intelligence Report")
-
-
-
     extracted_skills = result.get("skills") or []
     missing_skills = result.get("missing_skills") or []
     raw_goal = result.get("goal")
     target_role = raw_goal.strip() if isinstance(raw_goal, str) and raw_goal.strip() else "Target IT Role"
     recommendation = result.get("final_recommendation") or "No report content generated."
+
+    # Eye-Catching Report Section Hero Header Banner
+    st.markdown(f"""
+    <div class="report-section-hero-wrapper">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+                    <span class="report-status-pill-active">
+                        <span class="report-pulse-dot"></span> LIVE ANALYSIS READY
+                    </span>
+                    <span class="report-status-pill-meta">
+                        🇱🇰 SRI LANKA TECH BENCHMARK 2026
+                    </span>
+                </div>
+                <h2 style="margin: 0.2rem 0 0.4rem 0; color: #ffffff; font-size: 1.85rem; font-weight: 800; letter-spacing: -0.02em;">
+                    Your Personalized Career Intelligence Report
+                </h2>
+                <div style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5;">
+                    Comprehensive AI multi-agent roadmap, skills gap analysis, certifications, and local Sri Lankan IT market strategy.
+                </div>
+            </div>
+            <div class="report-hero-role-chip">
+                <span style="font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Target IT Position</span>
+                <span style="font-size: 1.15rem; color: #38bdf8; font-weight: 800; margin-top: 0.15rem;">{target_role}</span>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if current_input_text and last_executed and current_input_text != last_executed:
+        st.warning("⚠️ **New Input Text Detected!** The report below is from your previous run. Click the blue **`Generate Career Advice & Roadmap`** button above to generate the new report for your updated profile!")
 
     # High-Level Metric Stat Box Row
     m_col1, m_col2, m_col3, m_col4 = st.columns(4)
@@ -2334,9 +2542,9 @@ if "career_advice_result" in st.session_state:
 
     # Tabbed View Navigation
     tab_roadmap, tab_skills, tab_rag = st.tabs([
-        "Career Roadmap & Elevation Ladder", 
-        "Skills Gap & Readiness Radar", 
-        "RAG Knowledge Base References"
+        "🗺️ Career Roadmap & Elevation Ladder", 
+        "🎯 Skills Gap & Readiness Radar", 
+        "📚 RAG Knowledge Base References"
     ])
 
     # --------------------------------------------------------------------------
