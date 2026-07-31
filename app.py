@@ -2373,7 +2373,7 @@ if "career_advice_result" not in st.session_state:
     st.markdown("""
     <div class="report-placeholder-banner">
         <div class="report-placeholder-icon">📑</div>
-        <div class="report-placeholder-title">Personalized Career Intelligence Report Section</div>
+        <div class="report-placeholder-title">Personalized Career Intelligence Report</div>
         <div class="report-placeholder-desc">
             Your detailed multi-agent AI career analysis, personalized career ladder, skills gap matrix, industry certifications, and grounded RAG insights will be generated and displayed right here in this section.
         </div>
