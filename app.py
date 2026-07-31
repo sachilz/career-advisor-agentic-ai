@@ -2385,7 +2385,7 @@ if "career_advice_result" not in st.session_state:
             <span class="report-feature-badge">📄 Exportable PDF Report</span>
         </div>
         <div style="margin-top: 1.4rem; font-size: 0.88rem; color: #34d399; font-weight: 700;">
-            👇 Enter your profile & goal above, then click <b>"Generate Career Advice & Roadmap"</b> to populate your report!
+            Enter your profile & goal above, then click <b>"Generate Career Advice & Roadmap"</b> to populate your report!
         </div>
     </div>
     """, unsafe_allow_html=True)
