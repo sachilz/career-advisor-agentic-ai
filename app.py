@@ -2378,11 +2378,11 @@ if "career_advice_result" not in st.session_state:
             Your detailed multi-agent AI career analysis, personalized career ladder, skills gap matrix, industry certifications, and grounded RAG insights will be generated and displayed right here in this section.
         </div>
         <div style="display: flex; gap: 0.65rem; justify-content: center; flex-wrap: wrap; margin-top: 1.1rem;">
-            <span class="report-feature-badge">🗺️ Monthly Career Rungs</span>
-            <span class="report-feature-badge">🎯 Live Skill Readiness Score</span>
-            <span class="report-feature-badge">🏆 Industry Certifications Grid</span>
-            <span class="report-feature-badge">📚 Grounded RAG References</span>
-            <span class="report-feature-badge">📄 Exportable PDF Report</span>
+            <span class="report-feature-badge">Monthly Career Rungs</span>
+            <span class="report-feature-badge">Live Skill Readiness Score</span>
+            <span class="report-feature-badge">Industry Certifications Grid</span>
+            <span class="report-feature-badge">Grounded RAG References</span>
+            <span class="report-feature-badge">Exportable PDF Report</span>
         </div>
         <div style="margin-top: 1.4rem; font-size: 0.88rem; color: #34d399; font-weight: 700;">
             Enter your profile & goal above, then click <b>"Generate Career Advice & Roadmap"</b> to populate your report!
