@@ -2538,9 +2538,9 @@ if "career_advice_result" in st.session_state:
 
     # Tabbed View Navigation
     tab_roadmap, tab_skills, tab_rag = st.tabs([
-        "🗺️ Career Roadmap & Elevation Ladder", 
-        "🎯 Skills Gap & Readiness Radar", 
-        "📚 RAG Knowledge Base References"
+        "Career Roadmap & Elevation Ladder", 
+        "Skills Gap & Readiness Radar", 
+        "RAG Knowledge Base References"
     ])
 
     # --------------------------------------------------------------------------
@@ -2868,14 +2868,14 @@ if "career_advice_result" in st.session_state:
             rep_col1, rep_col2 = st.columns([2.5, 1.5])
             with rep_col1:
                 search_kw = st.text_input(
-                    "🔍 Search within report:",
+                    "Search within report:",
                     placeholder="Type keywords like Docker, Linux, Certifications, Agile...",
                     key="report_search_input"
                 )
             with rep_col2:
                 sec_filter_raw = st.selectbox(
-                    "🎯 Jump / Filter Section:",
-                    ["Show All Sections", "🎯 Target Profile & Feasibility", "⚖️ Technical Strengths vs Missing Gaps", "🗺️ Learning Roadmap", "🏆 Recommended Certifications", "🇱🇰 SL Market Advice"],
+                    "Jump / Filter Section:",
+                    ["Show All Sections", "Target Profile & Feasibility", "Technical Strengths vs Missing Gaps", "Learning Roadmap", "Recommended Certifications", "SL Market Advice"],
                     key="report_sec_select"
                 )
                 sec_filter: str = str(sec_filter_raw or "Show All Sections")
