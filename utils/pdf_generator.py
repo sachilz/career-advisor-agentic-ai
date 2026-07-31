@@ -46,7 +46,7 @@ class AcademicNumberedCanvas(canvas.Canvas):
 
         # Running Top Header (Pages > 1)
         if current_page > 1:
-            self.drawString(margin, height - 36, "CAREER ADVISORY REPORT | PROFESSIONAL TECHNICAL ASSESSMENT")
+            self.drawString(margin, height - 36, "TALENT NAVIGATOR REPORT | PROFESSIONAL TECHNICAL ASSESSMENT")
             self.setStrokeColor(colors.HexColor("#CBD5E0"))
             self.setLineWidth(0.5)
             self.line(margin, height - 42, width - margin, height - 42)
@@ -290,7 +290,7 @@ def generate_academic_pdf(
     story = []
 
     # Title Banner Block
-    story.append(Paragraph("CAREER ADVISORY & STRATEGIC ASSESSMENT REPORT", custom_styles["DocTitle"]))
+    story.append(Paragraph("TALENT NAVIGATOR & STRATEGIC ASSESSMENT REPORT", custom_styles["DocTitle"]))
     story.append(Paragraph("Formal Technical Evaluation and Skill Acquisition Plan", custom_styles["DocSubtitle"]))
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#1A202C"), spaceBefore=2, spaceAfter=10))
 
