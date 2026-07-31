@@ -2490,10 +2490,6 @@ if "career_advice_result" in st.session_state:
                     Comprehensive AI multi-agent roadmap, skills gap analysis, certifications, and local Sri Lankan IT market strategy.
                 </div>
             </div>
-            <div class="report-hero-role-chip">
-                <span style="font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Target IT Position</span>
-                <span style="font-size: 1.15rem; color: #38bdf8; font-weight: 800; margin-top: 0.15rem;">{target_role}</span>
-            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
