@@ -2363,7 +2363,7 @@ st.markdown("""
     <hr class="report-divider-line">
     <div class="report-divider-badge">
         <span></span>
-        <span>DETAILED CAREER REPORT</span>
+        <span>YOUR CAREER REPORT</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
